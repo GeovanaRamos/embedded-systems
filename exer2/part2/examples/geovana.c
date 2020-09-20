@@ -103,7 +103,7 @@ int8_t user_i2c_read(uint8_t reg_addr, uint8_t *data, uint32_t len, void *intf_p
  * APIs
  */
 void user_delay_us(uint32_t period, void *intf_ptr){
-    usleep(period);
+    sleep(period);
 }
 
 /*!
@@ -162,9 +162,6 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
     /* Variable to define the selecting sensors */
     uint8_t settings_sel = 0;
 
-    /* Variable to store minimum wait time between consecutive measurement in force mode */
-    uint32_t req_delay;
-
     /* Structure to get the pressure, temperature and humidity values */
     struct bme280_data comp_data;
 
@@ -186,10 +183,6 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
 
     printf("Temperature, Pressure, Humidity\n");
 
-    /*Calculate the minimum delay required between consecutive measurement based upon the sensor enabled
-     *  and the oversampling configuration. */
-    req_delay = bme280_cal_meas_delay(&dev->settings);
-
     /* Continuously stream sensor data */
     while (1) {
         /* Set the sensor to forced mode */
@@ -200,7 +193,7 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
         }
 
         /* Wait for the measurement to complete and print data */
-        dev->delay_us(req_delay, dev->intf_ptr);
+        dev->delay_us(1, dev->intf_ptr);
         rslt = bme280_get_sensor_data(BME280_ALL, &comp_data, dev);
         if (rslt != BME280_OK){
             fprintf(stderr, "Failed to get sensor data (code %+d).", rslt);
