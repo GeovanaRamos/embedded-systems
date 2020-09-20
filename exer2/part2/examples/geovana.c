@@ -32,7 +32,7 @@ void print_sensor_data(struct bme280_data *comp_data);
 int8_t user_i2c_read(uint8_t reg_addr, uint8_t *data, uint32_t len, void *intf_ptr);
 int8_t user_i2c_write(uint8_t reg_addr, const uint8_t *data, uint32_t len, void *intf_ptr);
 int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev);
-void create_csv(struct bme280_data *comp_data);
+void create_csv(int sum_hum, int sum_pres, int sum_temp);
 
 /*!
  * @brief This function starts execution of the program.
@@ -204,9 +204,9 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
 
         print_sensor_data(&comp_data);
         
-        sum_hum += comp_data->humidity;
-        sum_pres += comp_data->pressure;
-        sum_temp += comp_data->temperature;
+        sum_hum += comp_data.humidity;
+        sum_pres += comp_data.pressure;
+        sum_temp += comp_data.temperature;
         
         if (i%10 == 0){
             create_csv(sum_hum, sum_pres, sum_temp);
