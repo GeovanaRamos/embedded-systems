@@ -104,7 +104,7 @@ int8_t user_i2c_read(uint8_t reg_addr, uint8_t *data, uint32_t len, void *intf_p
  * APIs
  */
 void user_delay_us(uint32_t period, void *intf_ptr){
-    sleep(period);
+    usleep(period);
 }
 
 /*!
@@ -166,6 +166,8 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
     /* Structure to get the pressure, temperature and humidity values */
     struct bme280_data comp_data;
 
+    uint32_t req_delay;
+
     /* Recommended mode of operation: Indoor navigation */
     dev->settings.osr_h = BME280_OVERSAMPLING_1X;
     dev->settings.osr_p = BME280_OVERSAMPLING_16X;
@@ -184,6 +186,8 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
 
     printf("Temperature, Pressure, Humidity\n");
 
+    req_delay = bme280_cal_meas_delay(&dev->settings);
+
     /* Continuously stream sensor data */
     while (1) {
         /* Set the sensor to forced mode */
@@ -194,7 +198,7 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
         }
 
         /* Wait for the measurement to complete and print data */
-        dev->delay_us(1, dev->intf_ptr);
+        dev->delay_us(req_delay, dev->intf_ptr);
         rslt = bme280_get_sensor_data(BME280_ALL, &comp_data, dev);
         if (rslt != BME280_OK){
             fprintf(stderr, "Failed to get sensor data (code %+d).", rslt);
@@ -203,6 +207,7 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
 
         create_csv(&comp_data);
         print_sensor_data(&comp_data);
+        sleep(1);
     }
 
     return rslt;
