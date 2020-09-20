@@ -189,7 +189,7 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
     req_delay = bme280_cal_meas_delay(&dev->settings);
 
     /* Continuously stream sensor data */
-    while (1) {
+    for (int i=0; i<100; i++) {
         /* Set the sensor to forced mode */
         rslt = bme280_set_sensor_mode(BME280_FORCED_MODE, dev);
         if (rslt != BME280_OK) {
@@ -205,8 +205,12 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
             break;
         }
 
-        create_csv(&comp_data);
         print_sensor_data(&comp_data);
+        
+        if (i%10 == 0){
+            create_csv(&comp_data);
+        }
+        
         sleep(1);
     }
 
