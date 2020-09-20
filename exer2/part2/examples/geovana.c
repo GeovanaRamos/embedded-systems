@@ -157,16 +157,13 @@ void print_sensor_data(struct bme280_data *comp_data){
  * @brief This API reads the sensor temperature, pressure and humidity data in forced mode.
  */
 int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
-    /* Variable to define the result */
+
     int8_t rslt = BME280_OK;
-
-    /* Variable to define the selecting sensors */
     uint8_t settings_sel = 0;
-
-    /* Structure to get the pressure, temperature and humidity values */
     struct bme280_data comp_data;
-
     uint32_t req_delay;
+
+    int sum_temp = 0, sum_pres = 0, sum_hum = 0;
 
     /* Recommended mode of operation: Indoor navigation */
     dev->settings.osr_h = BME280_OVERSAMPLING_1X;
@@ -189,7 +186,7 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
     req_delay = bme280_cal_meas_delay(&dev->settings);
 
     /* Continuously stream sensor data */
-    for (int i=0; i<100; i++) {
+    for (int i=1; i<=100; i++) {
         /* Set the sensor to forced mode */
         rslt = bme280_set_sensor_mode(BME280_FORCED_MODE, dev);
         if (rslt != BME280_OK) {
@@ -207,25 +204,29 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
 
         print_sensor_data(&comp_data);
         
-        if (i%10 == 0){
-            create_csv(&comp_data);
-        }
+        sum_hum += comp_data->humidity;
+        sum_pres += comp_data->pressure;
+        sum_temp += comp_data->temperature;
         
+        if (i%10 == 0){
+            create_csv(sum_hum, sum_pres, sum_temp);
+        }
+
         sleep(1);
     }
 
     return rslt;
 }
 
-void create_csv(struct bme280_data *comp_data){
+void create_csv(int sum_hum, int sum_pres, int sum_temp){
     FILE *fp;
 
-    printf("\n Creating %s.csv file", "bme_data.csv");
+    printf("\n Creating %s.csv file\n", "bme_data.csv");
 
     fp=fopen("bme_data.csv", "w");
 
     fprintf(fp,"Temperature,Humidity,Pressure");
-    fprintf(fp,"\n%0.2lf,%0.2lf,%0.2lf",comp_data->temperature, comp_data->humidity, comp_data->pressure);
+    fprintf(fp,"\n%0.2lf,%0.2lf,%0.2lf", sum_temp/10.0, sum_hum/10.0, sum_pres/10.0);
     
     fclose(fp);
 
