@@ -210,6 +210,9 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
         
         if (i%10 == 0){
             create_csv(sum_hum, sum_pres, sum_temp);
+            sum_hum = 0;
+            sum_pres = 0;
+            sum_temp = 0;
         }
 
         sleep(1);
@@ -229,6 +232,4 @@ void create_csv(int sum_hum, int sum_pres, int sum_temp){
     fprintf(fp,"\n%0.2lf,%0.2lf,%0.2lf", sum_temp/10.0, sum_hum/10.0, sum_pres/10.0);
     
     fclose(fp);
-
-    printf("\n %sfile created", "bme_data.csv");
 }
