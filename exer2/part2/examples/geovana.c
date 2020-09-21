@@ -33,7 +33,7 @@ void print_sensor_data(struct bme280_data *comp_data);
 int8_t user_i2c_read(uint8_t reg_addr, uint8_t *data, uint32_t len, void *intf_ptr);
 int8_t user_i2c_write(uint8_t reg_addr, const uint8_t *data, uint32_t len, void *intf_ptr);
 int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev);
-void create_csv(double sum_hum, double sum_pres, double sum_temp);
+void create_csv(double sum_hum, double sum_pres, double sum_temp, int i);
 
 /*!
  * @brief This function starts execution of the program.
@@ -231,14 +231,14 @@ void create_csv(double sum_hum, double sum_pres, double sum_temp, int i){
     fp=fopen("data.csv", "w+");
 
     if (i==10){
-        fprintf(fp,"Temperature,Humidity,Pressure");
+        fprintf(fp,"Temperature,Humidity,Pressure,Time");
     }
 
     fprintf(fp,"\n%0.2lf,%0.2lf,%0.2lf", sum_temp/(double)10, sum_hum/(double)10, sum_pres/(double)100);
     
     time_t t = time(NULL);
     struct tm tm = *localtime(&t);
-    fprintf(",%d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+    fprintf(fp, ",%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 
     fclose(fp);
 }
