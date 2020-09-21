@@ -187,6 +187,8 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
 
     /* Continuously stream sensor data */
     for (int i=1; i<=100; i++) {
+        sleep(1);
+        
         /* Set the sensor to forced mode */
         rslt = bme280_set_sensor_mode(BME280_FORCED_MODE, dev);
         if (rslt != BME280_OK) {
@@ -201,11 +203,8 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
             fprintf(stderr, "Failed to get sensor data (code %+d).", rslt);
             break;
         }
-
-        print_sensor_data(&comp_data);
-        sleep(1);
         
-        printf("Count %d", i)
+        print_sensor_data(&comp_data);
         
         sum_hum += comp_data.humidity;
         sum_pres += comp_data.pressure;
@@ -226,12 +225,12 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
 void create_csv(int sum_hum, int sum_pres, int sum_temp){
     FILE *fp;
 
-    printf("\n Creating %s.csv file\n", "bme_data.csv");
+    printf("Creating %s.csv file\n", "data.csv");
 
-    fp=fopen("bme_data.csv", "w");
+    fp=fopen("data.csv", "w");
 
     fprintf(fp,"Temperature,Humidity,Pressure");
-    fprintf(fp,"\n%0.2lf,%0.2lf,%0.2lf", sum_temp/10.0, sum_hum/10.0, sum_pres/10.0);
+    fprintf(fp,"\n%0.2lf,%0.2lf,%0.2lf", sum_temp/float(10), sum_hum/float(10), sum_pres/float(10));
     
     fclose(fp);
 }
