@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#include <time.h>
 
 /******************************************************************************/
 /*!                         Own header files                                  */
@@ -230,7 +231,11 @@ void create_csv(double sum_hum, double sum_pres, double sum_temp){
     fp=fopen("data.csv", "w");
 
     fprintf(fp,"Temperature,Humidity,Pressure");
-    fprintf(fp,"\n%0.2lf,%0.2lf,%0.2lf", sum_temp/(double)10, sum_hum/(double)10, sum_pres/(double)10);
+    fprintf(fp,"\n%0.2lf,%0.2lf,%0.2lf", sum_temp/(double)10, sum_hum/(double)10, sum_pres/(double)100);
     
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    fprintf(",%d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+
     fclose(fp);
 }
