@@ -32,7 +32,7 @@ void print_sensor_data(struct bme280_data *comp_data);
 int8_t user_i2c_read(uint8_t reg_addr, uint8_t *data, uint32_t len, void *intf_ptr);
 int8_t user_i2c_write(uint8_t reg_addr, const uint8_t *data, uint32_t len, void *intf_ptr);
 int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev);
-void create_csv(int sum_hum, int sum_pres, int sum_temp);
+void create_csv(double sum_hum, double sum_pres, double sum_temp);
 
 /*!
  * @brief This function starts execution of the program.
@@ -222,7 +222,7 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
     return rslt;
 }
 
-void create_csv(int sum_hum, int sum_pres, int sum_temp){
+void create_csv(double sum_hum, double sum_pres, double sum_temp){
     FILE *fp;
 
     printf("Creating %s.csv file\n", "data.csv");
