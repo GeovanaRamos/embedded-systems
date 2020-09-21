@@ -230,7 +230,7 @@ void create_csv(int sum_hum, int sum_pres, int sum_temp){
     fp=fopen("data.csv", "w");
 
     fprintf(fp,"Temperature,Humidity,Pressure");
-    fprintf(fp,"\n%0.2lf,%0.2lf,%0.2lf", sum_temp/(double)10, sum_hum/(double)10, sum_pres/(double)10;
+    fprintf(fp,"\n%0.2lf,%0.2lf,%0.2lf", sum_temp/(double)10, sum_hum/(double)10, sum_pres/(double)10);
     
     fclose(fp);
 }
