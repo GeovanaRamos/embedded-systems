@@ -212,7 +212,7 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
         sum_temp += comp_data.temperature;
         
         if (i%10 == 0){
-            create_csv(sum_hum, sum_pres, sum_temp);
+            create_csv(sum_hum, sum_pres, sum_temp, i);
             sum_hum = 0;
             sum_pres = 0;
             sum_temp = 0;
@@ -223,14 +223,17 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
     return rslt;
 }
 
-void create_csv(double sum_hum, double sum_pres, double sum_temp){
+void create_csv(double sum_hum, double sum_pres, double sum_temp, int i){
     FILE *fp;
 
     printf("Creating %s.csv file\n", "data.csv");
 
-    fp=fopen("data.csv", "w");
+    fp=fopen("data.csv", "w+");
 
-    fprintf(fp,"Temperature,Humidity,Pressure");
+    if (i==10){
+        fprintf(fp,"Temperature,Humidity,Pressure");
+    }
+
     fprintf(fp,"\n%0.2lf,%0.2lf,%0.2lf", sum_temp/(double)10, sum_hum/(double)10, sum_pres/(double)100);
     
     time_t t = time(NULL);
