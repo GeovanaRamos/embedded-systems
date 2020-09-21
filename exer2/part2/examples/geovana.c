@@ -203,6 +203,9 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
         }
 
         print_sensor_data(&comp_data);
+        sleep(1);
+        
+        printf("Count %d", i)
         
         sum_hum += comp_data.humidity;
         sum_pres += comp_data.pressure;
@@ -215,7 +218,6 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
             sum_temp = 0;
         }
 
-        sleep(1);
     }
 
     return rslt;
