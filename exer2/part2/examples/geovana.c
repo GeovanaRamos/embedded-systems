@@ -163,7 +163,7 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
     struct bme280_data comp_data;
     uint32_t req_delay;
 
-    int sum_temp = 0, sum_pres = 0, sum_hum = 0;
+    double sum_temp = 0, sum_pres = 0, sum_hum = 0;
 
     /* Recommended mode of operation: Indoor navigation */
     dev->settings.osr_h = BME280_OVERSAMPLING_1X;
@@ -230,7 +230,7 @@ void create_csv(int sum_hum, int sum_pres, int sum_temp){
     fp=fopen("data.csv", "w");
 
     fprintf(fp,"Temperature,Humidity,Pressure");
-    fprintf(fp,"\n%0.2lf,%0.2lf,%0.2lf", sum_temp/float(10), sum_hum/float(10), sum_pres/float(10));
+    fprintf(fp,"\n%0.2lf,%0.2lf,%0.2lf", sum_temp/(double)10, sum_hum/(double)10, sum_pres/(double)10;
     
     fclose(fp);
 }
