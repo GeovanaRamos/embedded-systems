@@ -33,7 +33,8 @@ void print_sensor_data(struct bme280_data *comp_data);
 int8_t user_i2c_read(uint8_t reg_addr, uint8_t *data, uint32_t len, void *intf_ptr);
 int8_t user_i2c_write(uint8_t reg_addr, const uint8_t *data, uint32_t len, void *intf_ptr);
 int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev);
-void create_csv(double sum_hum, double sum_pres, double sum_temp, int i);
+void create_csv();
+void add_to_csv(double sum_hum, double sum_pres, double sum_temp);
 
 /*!
  * @brief This function starts execution of the program.
@@ -186,6 +187,8 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
 
     req_delay = bme280_cal_meas_delay(&dev->settings);
 
+    create_csv();
+
     /* Continuously stream sensor data */
     for (int i=1; i<=100; i++) {
         sleep(1);
@@ -212,7 +215,7 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
         sum_temp += comp_data.temperature;
         
         if (i%10 == 0){
-            create_csv(sum_hum, sum_pres, sum_temp, i);
+            add_to_csv(sum_hum, sum_pres, sum_temp);
             sum_hum = 0;
             sum_pres = 0;
             sum_temp = 0;
@@ -223,16 +226,22 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev){
     return rslt;
 }
 
-void create_csv(double sum_hum, double sum_pres, double sum_temp, int i){
+void create_csv(){
     FILE *fp;
 
-    printf("Creating %s.csv file\n", "data.csv");
+    fp=fopen("data.csv", "w");
+    
+    fprintf(fp,"Temperature,Humidity,Pressure,Time");
 
-    fp=fopen("data.csv", "w+");
+    fclose(fp);
+}
 
-    if (i==10){
-        fprintf(fp,"Temperature,Humidity,Pressure,Time");
-    }
+void add_to_csv(double sum_hum, double sum_pres, double sum_temp){
+    FILE *fp;
+
+    printf("Adding average to data.csv file\n");
+
+    fp=fopen("data.csv", "a+");
 
     fprintf(fp,"\n%0.2lf,%0.2lf,%0.2lf", sum_temp/(double)10, sum_hum/(double)10, sum_pres/(double)100);
     
