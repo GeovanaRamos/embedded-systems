@@ -50,9 +50,7 @@ int8_t user_i2c_write(uint8_t reg_addr, const uint8_t *data, uint32_t len, void 
     return BME280_OK;
 }
 
-struct bme280_dev init_bme(){
-
-    struct bme280_dev dev;
+void init_bme(struct bme280_dev *dev){
     struct identifier id;
     int8_t rslt = BME280_OK;
 
@@ -69,22 +67,20 @@ struct bme280_dev init_bme(){
         exit(1);
     }
 
-    dev.intf = BME280_I2C_INTF;
-    dev.read = user_i2c_read;
-    dev.write = user_i2c_write;
-    dev.delay_us = user_delay_us;
+    dev->intf = BME280_I2C_INTF;
+    dev->read = user_i2c_read;
+    dev->write = user_i2c_write;
+    dev->delay_us = user_delay_us;
 
     /* Update interface pointer with the structure that contains both device address and file descriptor */
-    dev.intf_ptr = &id;
+    dev->intf_ptr = &id;
 
     /* Initialize the bme280 */
-    rslt = bme280_init(&dev);
+    rslt = bme280_init(dev);
     if (rslt != BME280_OK){
         fprintf(stderr, "Failed to initialize the device (code %+d).\n", rslt);
         exit(1);
     }
-
-    return dev;
 }
 
 struct bme280_dev stream_sensor_data_forced_mode(struct bme280_dev *dev){
@@ -189,8 +185,8 @@ int main (){
     create_csv();
 
     //CONFIG BME
-    dev = init_bme();
-    dev = stream_sensor_data_forced_mode(&dev);
+    init_bme(&dev);
+    stream_sensor_data_forced_mode(&dev);
     req_delay = bme280_cal_meas_delay(&dev.settings);
 
     while(1){
@@ -199,7 +195,6 @@ int main (){
 
         //LER VALOR TI DO LM35
         ti +=1;
-        te +=2;
         
         // SE FORA DOS LIMITES...
         if (ti < tr - limit){
