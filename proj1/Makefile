@@ -1,6 +1,6 @@
 SOURCES.c= main.c read_bme.c ./bme_lib/bme280.c read_uart.c
 CFLAGS=
-SLIBS= -lm
+SLIBS= -lwiringPi
 PROGRAM= main
 CC = gcc
 

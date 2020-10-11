@@ -52,15 +52,15 @@ int main() {
     for (int i=1; i<=3; i++) {
         sleep(1);
         
-        //LER VALOR TEMPERATURAS
+        //READ TEMPERATURES
         te = get_bme_temperature(&dev);
         ti = get_uart_temperature(0, &uart0_filestream);
 
-        // SE FORA DOS LIMITES...
+        // IF OUT OF LIMITS
         if (ti < tr - limit) {
-            printf("Ligando resistor\n");
+            printf("Resistor O\n");
         } else if (ti > tr + limit) {
-            printf("Ligando ventoinha\n");
+            printf("Fan On\n");
         }
 
         //MOSTRAR TE,TI,TR NO LCD

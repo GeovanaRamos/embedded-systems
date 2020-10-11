@@ -110,7 +110,5 @@ double get_bme_temperature(struct bme280_dev *dev) {
         exit(1);
     }
 
-    printf("T:%lf, P:%lf", comp_data.temperature, comp_data.pressure);
-
     return comp_data.temperature;
 }

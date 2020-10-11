@@ -3,16 +3,14 @@
 #include <unistd.h>   //Used for UART
 #include "header.h"
 
-int validadeReading(int rx_length) {
+void validadeReading(int rx_length) {
     if (rx_length < 0) {
         printf("Erro na leitura.\n");
-        return 0;
+        exit(1);
     } else if (rx_length == 0) {
         printf("Nenhum dado disponível.\n");
-        return 0;
+        exit(1);
     }
-
-    return 1;
 }
 
 int init_uart() {
@@ -22,9 +20,8 @@ int init_uart() {
     uart0_filestream = open("/dev/serial0", O_RDWR | O_NOCTTY | O_NDELAY);  
 
     if (uart0_filestream == -1) {
-        printf("Erro - Não foi possível iniciar a UART.\n");
-    } else {
-        printf("UART inicializada!\n");
+        printf("UART error while opening.\n");
+        exit(1);
     }
     
     tcgetattr(uart0_filestream, &options);
@@ -59,10 +56,11 @@ double get_uart_temperature(int temp_type, int *uart0_filestream) {
 
     if (*uart0_filestream != -1) {
         int rx_length;
-        int temperature;
+        float temperature;
         rx_length = read(*uart0_filestream, &temperature, 4);
-        if (validadeReading(rx_length)) {
-            printf("%d\n", temperature);
-        }
+        validadeReading(rx_length);
+        return temperature;
     }
+
+    return 0;
 }
