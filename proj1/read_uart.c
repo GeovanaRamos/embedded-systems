@@ -1,14 +1,22 @@
-#include <fcntl.h>  //Used for UART
+#include <fcntl.h>    //Used for UART
 #include <termios.h>  //Used for UART
 #include <unistd.h>   //Used for UART
+
 #include "header.h"
 
 void validadeReading(int rx_length) {
     if (rx_length < 0) {
-        printf("Erro na leitura.\n");
+        printf("Error reading.\n");
         exit(1);
     } else if (rx_length == 0) {
-        printf("Nenhum dado disponível.\n");
+        printf("No data available.\n");
+        exit(1);
+    }
+}
+
+void validateWriting(int count) {
+    if (count < 0) {
+        printf("UART TX error\n");
         exit(1);
     }
 }
@@ -17,16 +25,16 @@ int init_uart() {
     int uart0_filestream = -1;
     struct termios options;
 
-    uart0_filestream = open("/dev/serial0", O_RDWR | O_NOCTTY | O_NDELAY);  
+    uart0_filestream = open("/dev/serial0", O_RDWR | O_NOCTTY | O_NDELAY);
 
     if (uart0_filestream == -1) {
         printf("UART error while opening.\n");
         exit(1);
     }
-    
+
     tcgetattr(uart0_filestream, &options);
 
-    options.c_cflag = B115200 | CS8 | CLOCAL | CREAD; 
+    options.c_cflag = B115200 | CS8 | CLOCAL | CREAD;
     options.c_iflag = IGNPAR;
     options.c_oflag = 0;
     options.c_lflag = 0;
@@ -44,7 +52,6 @@ double get_uart_temperature(int temp_type, int *uart0_filestream) {
 
     if (!temp_type) {
         *a++ = 0xA1;
-
     } else {
         *a++ = 0xA2;
     }
@@ -55,12 +62,20 @@ double get_uart_temperature(int temp_type, int *uart0_filestream) {
     *a++ = 0;
 
     if (*uart0_filestream != -1) {
+        int count = write(*uart0_filestream, &b[0], 4);
+        validateWriting(count);
+    }
+    
+    if (*uart0_filestream != -1) {
         int rx_length;
         float temperature;
         rx_length = read(*uart0_filestream, &temperature, 4);
         validadeReading(rx_length);
+
         return temperature;
+    } else {
+        printf("UART error");
+        exit(1);
     }
 
-    return 0;
 }
