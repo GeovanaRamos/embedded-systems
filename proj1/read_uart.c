@@ -45,7 +45,7 @@ int init_uart() {
     return uart0_filestream;
 }
 
-double get_uart_temperature(int temp_type, int *uart0_filestream) {
+double get_uart_temperature(int temp_type, int uart0_filestream) {
     unsigned char b[100];
     unsigned char *a;
     a = &b[0];
@@ -61,15 +61,15 @@ double get_uart_temperature(int temp_type, int *uart0_filestream) {
     *a++ = 8;
     *a++ = 0;
 
-    if (*uart0_filestream != -1) {
-        int count = write(*uart0_filestream, &b[0], 4);
+    if (uart0_filestream != -1) {
+        int count = write(uart0_filestream, &b[0], 4);
         validateWriting(count);
     }
     
-    if (*uart0_filestream != -1) {
+    if (uart0_filestream != -1) {
         int rx_length;
         float temperature;
-        rx_length = read(*uart0_filestream, &temperature, 4);
+        rx_length = read(uart0_filestream, &temperature, 4);
         validadeReading(rx_length);
 
         return temperature;

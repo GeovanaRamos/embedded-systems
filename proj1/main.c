@@ -40,7 +40,7 @@ int main() {
         printf("Digite o valor da temperatura de referencia: ");
         scanf("%lf", &tr);
     } else {
-        tr = get_uart_temperature(1, &uart0_filestream);
+        tr = get_uart_temperature(1, uart0_filestream);
     }
 
     printf("Digite o valor da histerese: ");
@@ -53,8 +53,8 @@ int main() {
         sleep(1);
         
         //READ TEMPERATURES
-        te = get_bme_temperature(&dev);
-        ti = get_uart_temperature(0, &uart0_filestream);
+        te = get_bme_temperature(dev);
+        ti = get_uart_temperature(0, uart0_filestream);
 
         // IF OUT OF LIMITS
         if (ti < tr - limit) {

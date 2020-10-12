@@ -97,14 +97,14 @@ struct bme280_dev init_bme() {
     return dev;
 }
 
-double get_bme_temperature(struct bme280_dev *dev) {
+double get_bme_temperature(struct bme280_dev dev) {
     struct bme280_data comp_data;
     int8_t rslt = BME280_OK;
-    uint32_t req_delay = bme280_cal_meas_delay(&dev->settings);
+    uint32_t req_delay = bme280_cal_meas_delay(&dev.settings);
 
     /* Wait for the measurement to complete and print data */
-    dev->delay_us(req_delay, dev->intf_ptr);
-    rslt = bme280_get_sensor_data(BME280_ALL, &comp_data, dev);
+    dev.delay_us(req_delay, dev.intf_ptr);
+    rslt = bme280_get_sensor_data(BME280_ALL, &comp_data, &dev);
     if (rslt != BME280_OK) {
         fprintf(stderr, "Failed to get sensor data (code %+d).", rslt);
         exit(1);

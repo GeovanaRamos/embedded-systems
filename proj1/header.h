@@ -9,10 +9,10 @@ int8_t user_i2c_read(uint8_t reg_addr, uint8_t *data, uint32_t len, void *intf_p
 void user_delay_us(uint32_t period, void *intf_ptr);
 int8_t user_i2c_write(uint8_t reg_addr, const uint8_t *data, uint32_t len, void *intf_ptr);
 struct bme280_dev init_bme();
-double get_bme_temperature(struct bme280_dev *dev);
+double get_bme_temperature(struct bme280_dev dev);
 void validadeReading(int rx_length);
 int init_uart();
-double get_uart_temperature(int temp_type, int *uart0_filestream);
+double get_uart_temperature(int temp_type, int uart0_filestream);
 
 
 
