@@ -61,7 +61,7 @@ struct bme280_dev init_bme(struct identifier *id) {
     dev.write = user_i2c_write;
     dev.delay_us = user_delay_us;
 
-    dev.intf_ptr = &id;
+    dev.intf_ptr = id;
 
     rslt = bme280_init(&dev);
     if (rslt != BME280_OK) {
