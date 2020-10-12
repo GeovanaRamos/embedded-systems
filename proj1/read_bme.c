@@ -5,11 +5,6 @@
 
 #include "header.h"
 
-struct identifier {
-    uint8_t dev_addr;
-    int8_t fd;
-};
-
 int8_t user_i2c_read(uint8_t reg_addr, uint8_t *data, uint32_t len, void *intf_ptr) {
     struct identifier id;
 
@@ -43,21 +38,20 @@ int8_t user_i2c_write(uint8_t reg_addr, const uint8_t *data, uint32_t len, void 
     return BME280_OK;
 }
 
-struct bme280_dev init_bme() {
+struct bme280_dev init_bme(struct identifier *id) {
     
-    struct identifier id;
     int8_t rslt = BME280_OK;
     uint8_t settings_sel = 0;
     struct bme280_dev dev;
 
-    if ((id.fd = open("/dev/i2c-1", O_RDWR)) < 0) {
+    if ((id->fd = open("/dev/i2c-1", O_RDWR)) < 0) {
         fprintf(stderr, "Failed to open the i2c bus\n");
         exit(1);
     }
 
-    id.dev_addr = BME280_I2C_ADDR_PRIM;
+    id->dev_addr = BME280_I2C_ADDR_PRIM;
 
-    if (ioctl(id.fd, I2C_SLAVE, id.dev_addr) < 0) {
+    if (ioctl(id->fd, I2C_SLAVE, id->dev_addr) < 0) {
         fprintf(stderr, "Failed to acquire bus access and/or talk to slave.\n");
         exit(1);
     }

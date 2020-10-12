@@ -28,7 +28,8 @@ void add_to_csv(double ti, double te, double tr) {
 int main() {
     int tr_mode;
     double hysteresis, tr = 0, ti = 0, te = 0, limit;
-    struct bme280_dev dev = init_bme();
+    struct identifier id;
+    struct bme280_dev dev = init_bme(&id);
     int uart0_filestream = init_uart();
 
     printf("Como voce deseja definir a temperatura de referência?\n");
