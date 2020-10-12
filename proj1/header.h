@@ -19,5 +19,12 @@ double get_uart_temperature(int temp_type, int uart0_filestream);
 void init_lcd();
 void display_temperatures(double ti, double te, double tr);
 
+int init_gpio();
+void resistor_on();
+void resistor_off();
+void fan_on();
+void fan_off();
+void close_gpio();
+
 
 

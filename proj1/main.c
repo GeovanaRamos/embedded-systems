@@ -32,6 +32,7 @@ int main() {
     
     struct bme280_dev dev = init_bme(&id);
     int uart0_filestream = init_uart();
+    init_gpio();
     init_lcd();
 
     printf("Como voce deseja definir a temperatura de referência?\n");
@@ -61,18 +62,22 @@ int main() {
 
         // RESISTOR CONTROL
         if (ti < tr - limit) {
+            resistor_on();
             printf("Resistor On\n");
             is_resistor_on = 1;
         } else if (is_resistor_on){
+            resistor_off();
             printf("Resistor Off\n");
             is_resistor_on = 0;
         }
         
         // FAN CONTROL
         if (ti > tr + limit) {
+            fan_on();
             printf("Fan On\n");
             is_fan_on = 1;
         } else if (is_fan_on){
+            fan_off();
             printf("Fan Off\n");
             is_fan_on = 0;
         }
