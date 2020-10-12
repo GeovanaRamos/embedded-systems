@@ -26,11 +26,13 @@ void add_to_csv(double ti, double te, double tr) {
 }
 
 int main() {
-    int tr_mode;
+    int tr_mode, is_resistor_on = 0, is_fan_on = 0;
     double hysteresis, tr = 0, ti = 0, te = 0, limit;
     struct identifier id;
+    
     struct bme280_dev dev = init_bme(&id);
     int uart0_filestream = init_uart();
+    init_lcd();
 
     printf("Como voce deseja definir a temperatura de referência?\n");
     printf("1-Potenciometro\n");
@@ -57,16 +59,28 @@ int main() {
         te = get_bme_temperature(dev);
         ti = get_uart_temperature(0, uart0_filestream);
 
-        // IF OUT OF LIMITS
+        // RESISTOR CONTROL
         if (ti < tr - limit) {
-            printf("Resistor O\n");
-        } else if (ti > tr + limit) {
+            printf("Resistor On\n");
+            is_resistor_on = 1;
+        } else if (is_resistor_on){
+            printf("Resistor Off\n");
+            is_resistor_on = 0;
+        }
+        
+        // FAN CONTROL
+        if (ti > tr + limit) {
             printf("Fan On\n");
+            is_fan_on = 1;
+        } else if (is_fan_on){
+            printf("Fan Off\n");
+            is_fan_on = 0;
         }
 
-        //MOSTRAR TE,TI,TR NO LCD
+        //DISPLAY TEMPERATURES ON LCD
+        display_temperatures(ti, te, tr);
 
-        //SALVAR NO CSV
+        //SAVE TO CSV
         add_to_csv(ti, te, tr);
         printf("TI=%0.2lf,TE=%0.2lf,TR=%0.2lf\n", ti, te, tr);
         
