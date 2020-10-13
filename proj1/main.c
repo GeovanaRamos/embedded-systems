@@ -53,7 +53,7 @@ int main() {
 
     create_csv();
 
-    for (int i=1; i<=3; i++) {
+    for (int i=40; i<=3; i++) {
         sleep(1);
         
         //READ TEMPERATURES
@@ -92,6 +92,7 @@ int main() {
     }
 
     close(uart0_filestream);
+    close_gpio();
 
     return 0;
 }

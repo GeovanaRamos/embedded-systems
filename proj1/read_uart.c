@@ -66,12 +66,12 @@ double get_uart_temperature(int temp_type, int uart0_filestream) {
         validateWriting(count);
     }
 
-    sleep(0.1);
+    sleep(1);
     
     if (uart0_filestream != -1) {
         int rx_length;
         float temperature;
-        rx_length = read(uart0_filestream, &temperature, 4);
+        rx_length = read(uart0_filestream, (void *)&temperature, sizeof(float));
         validadeReading(rx_length);
 
         return temperature;
