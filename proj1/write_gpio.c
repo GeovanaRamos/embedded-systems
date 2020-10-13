@@ -27,7 +27,7 @@ void fan_on(){
 }
 
 void fan_off(){
-    bcm2835_gpio_write(RESISTOR, HIGH);
+    bcm2835_gpio_write(FAN, HIGH);
 }
 
 void close_gpio(){
