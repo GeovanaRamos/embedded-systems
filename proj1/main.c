@@ -53,7 +53,7 @@ int main() {
 
     create_csv();
 
-    for (int i=40; i<=3; i++) {
+    for (int i=0; i<=40; i++) {
         sleep(1);
         
         //READ TEMPERATURES
