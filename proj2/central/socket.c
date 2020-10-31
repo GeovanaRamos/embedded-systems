@@ -35,8 +35,13 @@ void *get_readings(){
     float value;
     char *code = "0x01";
     
-    send(sock, code, strlen(code), 0);
-    readings.temperature  = read(sock, &value, sizeof(float));
+    while(option!=0) {
+        sleep(1);
+
+        send(sock, code, strlen(code), 0);
+        read(sock, &value, sizeof(float));
+        readings.temperature  = value;
+    }
     
     return NULL;
 }
