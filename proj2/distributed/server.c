@@ -13,7 +13,7 @@ int main(int argc, char const *argv[]) {
     int opt = 1;
     int addrlen = sizeof(address);
     char buffer[1024] = {0};
-    char *hello = "Temp is 42";
+    float temperature = 52876.52;
 
     // Creating socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
@@ -46,9 +46,12 @@ int main(int argc, char const *argv[]) {
         perror("accept");
         exit(EXIT_FAILURE);
     }
-    valread = read(new_socket, buffer, 1024);
-    printf("%s\n", buffer);
-    send(new_socket, hello, strlen(hello), 0);
-    printf("Hello message sent\n");
+    while(1){
+        valread = read(new_socket, buffer, 1024);
+        printf("%s\n", buffer);
+        send(new_socket, &temperature, sizeof(float), 0);
+        printf("Message sent %f\n", temperature);
+    }
+
     return 0;
 }
