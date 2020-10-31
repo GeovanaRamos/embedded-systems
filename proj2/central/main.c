@@ -1,12 +1,10 @@
 #include "header.h"
 #include <pthread.h>
 
-
+int option = -1;
+struct sensor_readings readings = {0};
 
 int main() {
-    int option = -1;
-    struct sensor_readings empty = {0};
-    readings = empty;
 
     pthread_t thread_display_menu, thread_read_menu, thread_socket;
     
