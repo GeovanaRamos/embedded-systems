@@ -2,7 +2,7 @@
 #include <pthread.h>
 
 int option = -1;
-struct sensor_readings readings = {0};
+struct sensor_readings readings = {NULL};
 char *code;
 
 int main() {
@@ -17,10 +17,11 @@ int main() {
 
     init_menu();
 
+    pthread_create(&thread_socket, NULL, get_readings, NULL);
+    sleep(1);
     pthread_create(&thread_display_menu, NULL, display_logs, NULL);
     pthread_create(&thread_read_menu, NULL, read_menu, NULL);
-    pthread_create(&thread_socket, NULL, get_readings, NULL);
-
+    
 
     pthread_join(thread_display_menu, NULL);
     pthread_join(thread_read_menu, NULL);

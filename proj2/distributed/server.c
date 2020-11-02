@@ -5,6 +5,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include "cjson/cJSON.h"
 #define PORT 2000
 
 int main(int argc, char const *argv[]) {
@@ -46,11 +47,31 @@ int main(int argc, char const *argv[]) {
         perror("accept");
         exit(EXIT_FAILURE);
     }
+
+    cJSON *readings = cJSON_CreateObject();
+    cJSON_AddItemToObject(readings, "temperature", cJSON_CreateNumber(temperature));
+    cJSON_AddItemToObject(readings, "umidity", cJSON_CreateNumber(32.2));
+    cJSON_AddItemToObject(readings, "l1", cJSON_CreateNumber(1));
+    cJSON_AddItemToObject(readings, "l2", cJSON_CreateNumber(0));
+    cJSON_AddItemToObject(readings, "l3", cJSON_CreateNumber(1));
+    cJSON_AddItemToObject(readings, "l4", cJSON_CreateNumber(0));
+    cJSON_AddItemToObject(readings, "ar1", cJSON_CreateNumber(1));
+    cJSON_AddItemToObject(readings, "ar2", cJSON_CreateNumber(0));
+    cJSON_AddItemToObject(readings, "sa1", cJSON_CreateNumber(1));
+    cJSON_AddItemToObject(readings, "sa2", cJSON_CreateNumber(0));
+    cJSON_AddItemToObject(readings, "sa3", cJSON_CreateNumber(1));
+    cJSON_AddItemToObject(readings, "sa4", cJSON_CreateNumber(1));
+    cJSON_AddItemToObject(readings, "sa5", cJSON_CreateNumber(1));
+    cJSON_AddItemToObject(readings, "sa6", cJSON_CreateNumber(0));
+    cJSON_AddItemToObject(readings, "sp1", cJSON_CreateNumber(1));
+    cJSON_AddItemToObject(readings, "sp2", cJSON_CreateNumber(0));
+    char *string = cJSON_Print(readings);
+
     while(1){
         valread = read(new_socket, buffer, 1024);
         printf("%s\n", buffer);
-        send(new_socket, &temperature, sizeof(float), 0);
-        printf("Message sent %f\n", temperature);
+        send(new_socket, string, strlen(string), 0);
+        printf("Message sent %s\n", string);
     }
 
     return 0;

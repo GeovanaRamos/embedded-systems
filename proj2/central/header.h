@@ -2,24 +2,25 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include "cjson/cJSON.h"
 
 struct sensor_readings {
-    float temperature;
-    float umidity;
-    int l1;
-    int l2;
-    int l3;
-    int l4;
-    int ar1;
-    int ar2;
-    int sp1;
-    int sp2;
-    int sa1;
-    int sa2;
-    int sa3;
-    int sa4;
-    int sa5;
-    int sa6;
+    cJSON *temperature;
+    cJSON *umidity;
+    cJSON *l1;
+    cJSON *l2;
+    cJSON *l3;
+    cJSON *l4;
+    cJSON *ar1;
+    cJSON *ar2;
+    cJSON *sp1;
+    cJSON *sp2;
+    cJSON *sa1;
+    cJSON *sa2;
+    cJSON *sa3;
+    cJSON *sa4;
+    cJSON *sa5;
+    cJSON *sa6;
 };
 
 extern struct sensor_readings readings;

@@ -9,7 +9,6 @@ WINDOW *logs;
 WINDOW *menu;
 
 void init_menu() {
-
     initscr();
 
     logs = newwin(9, 100, 0, 0);
@@ -19,14 +18,16 @@ void init_menu() {
 void *display_logs(void *arg) {
     while (option != 0) {
         sleep(1);
-
         mvwprintw(logs, LINE_START, 0, "-----------------LOGs------------------");
-        mvwprintw(logs, LINE_START + 1, 0, "Temperature:%.2f; Umidity:%.2f", readings.temperature, readings.umidity);
-        mvwprintw(logs, LINE_START + 2, 0, "L1:%d; L2:%d; L3:%d; L4:%d", readings.l1, readings.l2, readings.l3, readings.l4);
-        mvwprintw(logs, LINE_START + 3, 0, "AR1:%d; AR2:%d", readings.ar1, readings.ar2);
-        mvwprintw(logs, LINE_START + 4, 0, "SP1:%d; SP2:%d", readings.sp1, readings.sp2);
+        mvwprintw(logs, LINE_START + 1, 0, "Temperature:%.2lf; Umidity:%.2lf",
+                  readings.temperature->valuedouble, readings.umidity->valuedouble);
+        mvwprintw(logs, LINE_START + 2, 0, "L1:%d; L2:%d; L3:%d; L4:%d",
+                  readings.l1->valueint, readings.l2->valueint, readings.l3->valueint, readings.l4->valueint);
+        mvwprintw(logs, LINE_START + 3, 0, "AR1:%d; AR2:%d", readings.ar1->valueint, readings.ar2->valueint);
+        mvwprintw(logs, LINE_START + 4, 0, "SP1:%d; SP2:%d", readings.sp1->valueint, readings.sp2->valueint);
         mvwprintw(logs, LINE_START + 5, 0, "SA1:%d; SA2:%d; SA3:%d; SA4:%d; SA5:%d; SA6:%d",
-                 readings.sa1, readings.sa2, readings.sa3, readings.sa4, readings.sa5, readings.sa6);
+                  readings.sa1->valueint, readings.sa2->valueint, readings.sa3->valueint, 
+                  readings.sa4->valueint, readings.sa5->valueint, readings.sa6->valueint);
         mvwprintw(logs, LINE_START + 6, 0, "--------------------------------------");
         wrefresh(logs);
     }
@@ -39,7 +40,7 @@ void display_options_explanation(int line_delta) {
     mvwprintw(menu, line_delta + 1, 0, "-> Aperte 2 para ar condicionado seguido do número do ar condicionado.");
     mvwprintw(menu, line_delta + 2, 0, "-> Aperte 3 para sensor de presença seguido do número do sensor.");
     mvwprintw(menu, line_delta + 3, 0, "-> Aperte 4 para sensor de abertura seguido do número do sensor.");
-    mvwprintw(menu, line_delta + 4, 0, "-> Aperte 5 para alarme.");
+    mvwprintw(menu, line_delta + 4, 0, "-> Aperte 50 para alarme.");
     mvwprintw(menu, line_delta + 5, 0, "Exemplo: para ligar a lâmpada 4 (L4) digite 14.");
 
     mvwprintw(menu, SCAN_LINE, 0, "Digite: ");
@@ -104,7 +105,6 @@ void *read_menu(void *arg) {
 
                 break;
         }
-        
     }
 
     return NULL;

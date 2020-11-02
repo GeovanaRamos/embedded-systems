@@ -32,15 +32,36 @@ int init_socket(){
 }
 
 void *get_readings(){
-    float value;
-    
+    char *buffer;
+
     while(option!=0) {
         sleep(1);
+        buffer = malloc(1024);
 
         send(sock, code, strlen(code), 0);
-        read(sock, &value, sizeof(float));
-        readings.temperature  = value;
+        read(sock , buffer, 1024); 
+
+        cJSON *root = cJSON_Parse(buffer);
+        readings.temperature = cJSON_GetObjectItemCaseSensitive(root, "temperature");
+        readings.umidity = cJSON_GetObjectItemCaseSensitive(root, "umidity");
+        readings.l1 = cJSON_GetObjectItemCaseSensitive(root, "l1");
+        readings.l2 = cJSON_GetObjectItemCaseSensitive(root, "l2");
+        readings.l3 = cJSON_GetObjectItemCaseSensitive(root, "l3");
+        readings.l4 = cJSON_GetObjectItemCaseSensitive(root, "l4");
+        readings.ar1 = cJSON_GetObjectItemCaseSensitive(root, "ar1");
+        readings.ar2 = cJSON_GetObjectItemCaseSensitive(root, "ar2");
+        readings.sa1 = cJSON_GetObjectItemCaseSensitive(root, "sa1");
+        readings.sa2 = cJSON_GetObjectItemCaseSensitive(root, "sa2");
+        readings.sa3 = cJSON_GetObjectItemCaseSensitive(root, "sa3");
+        readings.sa4 = cJSON_GetObjectItemCaseSensitive(root, "sa4");
+        readings.sa5 = cJSON_GetObjectItemCaseSensitive(root, "sa5");
+        readings.sa6 = cJSON_GetObjectItemCaseSensitive(root, "sa6");
+        readings.sp1 = cJSON_GetObjectItemCaseSensitive(root, "sp1");
+        readings.sp2 = cJSON_GetObjectItemCaseSensitive(root, "sp2");
+
+        free(buffer);
     }
+
     
     return NULL;
 }
