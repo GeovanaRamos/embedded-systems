@@ -33,7 +33,6 @@ int init_socket(){
 
 void *get_readings(){
     float value;
-    char *code = "0x01";
     
     while(option!=0) {
         sleep(1);

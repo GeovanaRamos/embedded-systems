@@ -3,8 +3,11 @@
 
 int option = -1;
 struct sensor_readings readings = {0};
+char *code;
 
 int main() {
+    code = malloc(5);
+    strcpy(code, "Z00");
 
     pthread_t thread_display_menu, thread_read_menu, thread_socket;
     
@@ -24,6 +27,7 @@ int main() {
     pthread_join(thread_socket, NULL);
 
     shut_down_menu();
+    free(code);
 
     return 0;
 }
