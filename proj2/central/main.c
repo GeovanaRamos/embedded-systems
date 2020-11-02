@@ -17,7 +17,7 @@ int main() {
 
     init_menu();
 
-    pthread_create(&thread_display_menu, NULL, display_menu, NULL);
+    pthread_create(&thread_display_menu, NULL, display_logs, NULL);
     pthread_create(&thread_read_menu, NULL, read_menu, NULL);
     pthread_create(&thread_socket, NULL, get_readings, NULL);
 

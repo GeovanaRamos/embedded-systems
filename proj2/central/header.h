@@ -30,6 +30,6 @@ int init_socket();
 void *get_readings();
 
 void init_menu();
-void *display_menu(void *arg);
+void *display_logs(void *arg);
 void *read_menu(void *arg);
 void shut_down_menu();
