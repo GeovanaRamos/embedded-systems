@@ -1,6 +1,6 @@
-SOURCES.c= main.c read_bme.c ./bme_lib/bme280.c read_uart.c write_gpio.c ./bcm_lib/bcm2835.c write_lcd.c
+SOURCES.c= main.c socket.c ./cjson/cJSON.c #read_bme.c ./bme_lib/bme280.c write_gpio.c ./bcm_lib/bcm2835.c
 CFLAGS=
-SLIBS= -lwiringPi
+SLIBS= -lpthread
 PROGRAM= main
 CC = gcc
 
