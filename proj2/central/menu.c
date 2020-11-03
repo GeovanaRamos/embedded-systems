@@ -79,6 +79,7 @@ void *read_menu(void *arg) {
                 strcpy(code, "A");
                 strcat(code, posfix_code);
                 send_command(code);
+                add_to_csv(code);
                 break;
 
             case 2:
@@ -91,6 +92,7 @@ void *read_menu(void *arg) {
                 strcpy(code, "B");
                 strcat(code, posfix_code);
                 send_command(code);
+                add_to_csv(code);
                 break;
 
             case 3:
@@ -103,6 +105,7 @@ void *read_menu(void *arg) {
                 strcpy(code, "C");
                 strcat(code, posfix_code);
                 send_command(code);
+                add_to_csv(code);
                 break;
 
             default:

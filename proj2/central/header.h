@@ -34,3 +34,6 @@ void init_menu();
 void *display_logs(void *arg);
 void *read_menu(void *arg);
 void shut_down_menu();
+
+void create_csv();
+void add_to_csv(char *code);

@@ -1,4 +1,4 @@
-SOURCES.c= main.c menu.c socket.c ./cjson/cJSON.c
+SOURCES.c= main.c menu.c socket.c ./cjson/cJSON.c csv.c
 CFLAGS=
 SLIBS= -lncurses -lpthread
 PROGRAM= main
