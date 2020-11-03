@@ -78,6 +78,7 @@ void *read_menu(void *arg) {
                 sprintf(posfix_code, "%d", value);
                 strcpy(code, "A");
                 strcat(code, posfix_code);
+                send_command(code);
                 break;
 
             case 2:
@@ -89,6 +90,7 @@ void *read_menu(void *arg) {
                 sprintf(posfix_code, "%d", value);
                 strcpy(code, "B");
                 strcat(code, posfix_code);
+                send_command(code);
                 break;
 
             case 3:
@@ -100,6 +102,7 @@ void *read_menu(void *arg) {
                 sprintf(posfix_code, "%d", value);
                 strcpy(code, "C");
                 strcat(code, posfix_code);
+                send_command(code);
                 break;
 
             default:

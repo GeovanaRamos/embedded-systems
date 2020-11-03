@@ -64,10 +64,6 @@ void *get_readings(){
     return NULL;
 }
 
-int send_command(char *code){
-    int status;
-
+void send_command(char *code){
     send(sock, code, strlen(code), 0);
-    
-    return status;
 }

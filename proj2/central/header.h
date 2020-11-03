@@ -28,6 +28,7 @@ extern int option;
 
 int init_socket();
 void *get_readings();
+void send_command(char *code);
 
 void init_menu();
 void *display_logs(void *arg);

@@ -5,15 +5,29 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <pthread.h>
 #include "cjson/cJSON.h"
 #define PORT 2000
 
+int new_socket = 0; 
+
+void *read_command(void *arg) {
+    char buffer[1024] = {0};
+    int valread;
+
+    while(1){
+        valread = read(new_socket, buffer, 1024);
+        printf("Recebido %s\n", buffer);
+        sleep(0.5);
+    }
+
+}
+
 int main(int argc, char const *argv[]) {
-    int server_fd, new_socket, valread;
+    int server_fd;
     struct sockaddr_in address;
     int opt = 1;
     int addrlen = sizeof(address);
-    char buffer[1024] = {0};
     float temperature = 52876.52;
 
     // Creating socket file descriptor
@@ -48,6 +62,10 @@ int main(int argc, char const *argv[]) {
         exit(EXIT_FAILURE);
     }
 
+    pthread_t thread_read_command;
+    pthread_create(&thread_read_command, NULL, read_command, NULL);
+
+
     cJSON *readings = cJSON_CreateObject();
     cJSON_AddItemToObject(readings, "temperature", cJSON_CreateNumber(temperature));
     cJSON_AddItemToObject(readings, "umidity", cJSON_CreateNumber(32.2));
@@ -68,12 +86,12 @@ int main(int argc, char const *argv[]) {
     char *string = cJSON_Print(readings);
 
     while(1){
-        //valread = read(new_socket, buffer, 1024);
-        //printf("%s\n", buffer);
         sleep(1);
         send(new_socket, string, strlen(string), 0);
         printf("Message sent %s\n", string);
     }
+
+    pthread_join(thread_read_command, NULL);
 
     return 0;
 }
