@@ -35,10 +35,8 @@ void *get_readings(){
     char *buffer;
 
     while(option!=0) {
-        sleep(1);
         buffer = malloc(1024);
 
-        send(sock, code, strlen(code), 0);
         read(sock , buffer, 1024); 
 
         cJSON *root = cJSON_Parse(buffer);
@@ -64,4 +62,12 @@ void *get_readings(){
 
     
     return NULL;
+}
+
+int send_command(char *code){
+    int status;
+
+    send(sock, code, strlen(code), 0);
+    
+    return status;
 }

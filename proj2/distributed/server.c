@@ -68,8 +68,9 @@ int main(int argc, char const *argv[]) {
     char *string = cJSON_Print(readings);
 
     while(1){
-        valread = read(new_socket, buffer, 1024);
-        printf("%s\n", buffer);
+        //valread = read(new_socket, buffer, 1024);
+        //printf("%s\n", buffer);
+        sleep(1);
         send(new_socket, string, strlen(string), 0);
         printf("Message sent %s\n", string);
     }

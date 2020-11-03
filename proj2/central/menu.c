@@ -50,6 +50,7 @@ void display_options_explanation(int line_delta) {
 void *read_menu(void *arg) {
     int value;
     char posfix_code[3];
+    char *code = malloc(4);
 
     while (option != 0) {
         wclear(menu);
