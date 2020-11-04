@@ -2,10 +2,10 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <sys/socket.h>
+
 #include "cjson/cJSON.h"
 #define PORT 2000
 #include "header.h"
-
 
 int new_socket = 0;
 
@@ -51,8 +51,41 @@ void *read_command(void *arg) {
 
     while (1) {
         valread = read(new_socket, buffer, 1024);
-        printf("Recebido %s\n", buffer);
-        sleep(0.5);
+
+        int code = atoi(buffer + 1);
+        int device = code / 10;
+
+        if (strstr(buffer, "L") != NULL) {
+            
+            switch (device) {
+                case 1:
+                    printf("Ligando Lampada %d\n", code % 10);
+                    break;
+                case 2:
+                    printf("Ligando Ar %d\n", code % 10);
+                    break;
+
+                default:
+                    break;
+            }
+
+        } else if (strstr(buffer, "D") != NULL) {
+
+            switch (device) {
+                case 1:
+                    printf("Desligando Lampada %d\n", code % 10);
+                    break;
+                case 2:
+                    printf("Desligando Ar %d\n", code % 10);
+                    break;
+
+                default:
+                    break;
+            }
+
+        } else {
+            printf("Mudando a temperatura para %d\n", code);
+        } 
     }
 }
 
@@ -79,6 +112,6 @@ void *send_logs(void *arg) {
         char *string = cJSON_Print(readings);
 
         send(new_socket, string, strlen(string), 0);
-        printf("Message sent %s\n", string);
+        printf("Logs enviados\n");
     }
 }
