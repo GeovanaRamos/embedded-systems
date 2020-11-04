@@ -1,3 +1,5 @@
 *.o
 *data.csv
 proj1/main
+proj2/central/main
+proj2/distributed/main
