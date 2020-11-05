@@ -5,6 +5,7 @@
 
 #include "header.h"
 
+
 WINDOW *logs;
 WINDOW *menu;
 
@@ -106,7 +107,13 @@ void *read_menu(void *arg) {
                 send_command(code);
                 add_to_csv(code);
                 break;
+            
+            case 4:
+                mvwprintw(menu, SCAN_LINE, 0, "Digite 0 para desligar e 1 para ligar o alarme: ");
+                wrefresh(menu);
 
+                mvwscanw(menu, SCAN_LINE, SCAN_COL, "%d", &is_alarm_on);
+                
             default:
 
                 break;

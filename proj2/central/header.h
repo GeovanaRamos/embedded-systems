@@ -25,6 +25,7 @@ struct sensor_readings {
 
 extern struct sensor_readings readings;
 extern int option;
+extern int is_alarm_on;
 
 int init_socket();
 void *get_readings();

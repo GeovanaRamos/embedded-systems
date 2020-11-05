@@ -2,6 +2,7 @@
 #include <pthread.h>
 
 int option = -1;
+int is_alarm_on = 1; //ON
 struct sensor_readings readings = {NULL};
 
 int main() {
