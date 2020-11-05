@@ -4,7 +4,7 @@
 #include <sys/socket.h>
 
 #include "cjson/cJSON.h"
-#define PORT 2000
+#define PORT 10119
 #include "header.h"
 
 int new_socket = 0;

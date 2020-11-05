@@ -2,7 +2,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <string.h>
-#define PORT 2000
+#define PORT 10019
 
 int sock = 0; 
 
