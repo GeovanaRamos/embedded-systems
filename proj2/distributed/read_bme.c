@@ -91,7 +91,7 @@ struct bme280_dev init_bme(struct identifier *id) {
     return dev;
 }
 
-double get_bme_temperature(struct bme280_dev dev) {
+struct bme280_data get_bme_data(struct bme280_dev dev) {
     struct bme280_data comp_data;
     int8_t rslt = BME280_OK;
     uint32_t req_delay = bme280_cal_meas_delay(&dev.settings);
@@ -104,5 +104,5 @@ double get_bme_temperature(struct bme280_dev dev) {
         exit(1);
     }
 
-    return comp_data.temperature;
+    return comp_data;
 }

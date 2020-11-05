@@ -96,15 +96,19 @@ void *read_command(void *arg) {
 
 void *send_logs(void *arg) {
 
-    //struct identifier id;
-    //struct bme280_dev dev = init_bme(&id);
+    struct identifier id;
+    struct bme280_dev dev = init_bme(&id);
+    struct bme280_data comp_data;
     int response = 1;
 
     while (response != 0 && response != -1) {
         sleep(1);
+
+        comp_data = get_bme_data(dev);
+
         cJSON *readings = cJSON_CreateObject();
-        cJSON_AddItemToObject(readings, "temperature", cJSON_CreateNumber(57.2));
-        cJSON_AddItemToObject(readings, "umidity", cJSON_CreateNumber(32.2));
+        cJSON_AddItemToObject(readings, "temperature", cJSON_CreateNumber(comp_data.temperature));
+        cJSON_AddItemToObject(readings, "umidity", cJSON_CreateNumber(comp_data.humidity));
         cJSON_AddItemToObject(readings, "l1", cJSON_CreateNumber(1));
         cJSON_AddItemToObject(readings, "l2", cJSON_CreateNumber(0));
         cJSON_AddItemToObject(readings, "l3", cJSON_CreateNumber(1));

@@ -5,13 +5,13 @@
 #include <unistd.h>
 #include "bme_lib/bme280.h"
 
-// struct identifier {
-//     uint8_t dev_addr;
-//     int8_t fd;
-// };
+struct identifier {
+    uint8_t dev_addr;
+    int8_t fd;
+};
 
-// struct bme280_dev init_bme(struct identifier *id);
-// double get_bme_temperature(struct bme280_dev dev);
+struct bme280_dev init_bme(struct identifier *id);
+struct bme280_data get_bme_data(struct bme280_dev dev);
 
 // int init_gpio();
 // void resistor_on();
