@@ -14,5 +14,7 @@ int main(int argc, char const *argv[]) {
     pthread_join(thread_read_command, NULL);
     pthread_join(thread_read_command, NULL);
 
+    printf("Conexão encerrada\n");
+
     return 0;
 }

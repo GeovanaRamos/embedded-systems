@@ -52,6 +52,11 @@ void *read_command(void *arg) {
     while (1) {
         valread = read(new_socket, buffer, 1024);
 
+        if (valread == 0)
+            break;
+        
+        printf("val %d", valread);
+
         int code = atoi(buffer + 1);
         int device = code / 10;
 
@@ -90,10 +95,15 @@ void *read_command(void *arg) {
 }
 
 void *send_logs(void *arg) {
-    while (1) {
+
+    //struct identifier id;
+    //struct bme280_dev dev = init_bme(&id);
+    int response = 1;
+
+    while (response != 0 && response != -1) {
         sleep(1);
         cJSON *readings = cJSON_CreateObject();
-        cJSON_AddItemToObject(readings, "temperature", cJSON_CreateNumber(52.42));
+        cJSON_AddItemToObject(readings, "temperature", cJSON_CreateNumber(57.2));
         cJSON_AddItemToObject(readings, "umidity", cJSON_CreateNumber(32.2));
         cJSON_AddItemToObject(readings, "l1", cJSON_CreateNumber(1));
         cJSON_AddItemToObject(readings, "l2", cJSON_CreateNumber(0));
@@ -114,4 +124,5 @@ void *send_logs(void *arg) {
         send(new_socket, string, strlen(string), 0);
         printf("Logs enviados\n");
     }
+
 }
