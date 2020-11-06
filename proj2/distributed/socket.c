@@ -47,12 +47,11 @@ void init_socket() {
 
 void *read_command(void *arg) {
     char buffer[1024] = {0};
-    int valread;
 
     while (1) {
         valread = read(new_socket, buffer, 1024);
 
-        if (valread == 0)
+        if (valread == 0 || valread == -1)
             break;
 
         int code = atoi(buffer + 1);
@@ -72,9 +71,8 @@ void *send_logs(void *arg) {
     struct identifier id;
     struct bme280_dev dev = init_bme(&id);
     struct bme280_data comp_data;
-    int response = 1;
 
-    while (response != 0 && response != -1) {
+    while (valsend != 0 && valsend != -1) {
         sleep(1);
 
         comp_data = get_bme_data(dev);
@@ -82,20 +80,20 @@ void *send_logs(void *arg) {
         cJSON *readings = cJSON_CreateObject();
         cJSON_AddItemToObject(readings, "temperature", cJSON_CreateNumber(comp_data.temperature));
         cJSON_AddItemToObject(readings, "umidity", cJSON_CreateNumber(comp_data.humidity));
-        cJSON_AddItemToObject(readings, "l1", cJSON_CreateNumber(get_device_status(11)));
-        cJSON_AddItemToObject(readings, "l2", cJSON_CreateNumber(get_device_status(12)));
-        cJSON_AddItemToObject(readings, "l3", cJSON_CreateNumber(get_device_status(13)));
-        cJSON_AddItemToObject(readings, "l4", cJSON_CreateNumber(get_device_status(14)));
-        cJSON_AddItemToObject(readings, "ar1", cJSON_CreateNumber(get_device_status(21)));
-        cJSON_AddItemToObject(readings, "ar2", cJSON_CreateNumber(get_device_status(22)));
-        cJSON_AddItemToObject(readings, "sa1", cJSON_CreateNumber(0));
-        cJSON_AddItemToObject(readings, "sa2", cJSON_CreateNumber(0));
-        cJSON_AddItemToObject(readings, "sa3", cJSON_CreateNumber(0));
-        cJSON_AddItemToObject(readings, "sa4", cJSON_CreateNumber(0));
-        cJSON_AddItemToObject(readings, "sa5", cJSON_CreateNumber(0));
-        cJSON_AddItemToObject(readings, "sa6", cJSON_CreateNumber(0));
-        cJSON_AddItemToObject(readings, "sp1", cJSON_CreateNumber(0));
-        cJSON_AddItemToObject(readings, "sp2", cJSON_CreateNumber(0));
+        cJSON_AddItemToObject(readings, "l1", cJSON_CreateNumber(get_device_status(L1)));
+        cJSON_AddItemToObject(readings, "l2", cJSON_CreateNumber(get_device_status(L2)));
+        cJSON_AddItemToObject(readings, "l3", cJSON_CreateNumber(get_device_status(L3)));
+        cJSON_AddItemToObject(readings, "l4", cJSON_CreateNumber(get_device_status(L4)));
+        cJSON_AddItemToObject(readings, "ar1", cJSON_CreateNumber(get_device_status(AR1)));
+        cJSON_AddItemToObject(readings, "ar2", cJSON_CreateNumber(get_device_status(AR2)));
+        cJSON_AddItemToObject(readings, "sp1", cJSON_CreateNumber(get_device_status(SP1)));
+        cJSON_AddItemToObject(readings, "sp2", cJSON_CreateNumber(get_device_status(SP2)));
+        cJSON_AddItemToObject(readings, "sa1", cJSON_CreateNumber(get_device_status(SA1)));
+        cJSON_AddItemToObject(readings, "sa2", cJSON_CreateNumber(get_device_status(SA2)));
+        cJSON_AddItemToObject(readings, "sa3", cJSON_CreateNumber(get_device_status(SA3)));
+        cJSON_AddItemToObject(readings, "sa4", cJSON_CreateNumber(get_device_status(SA4)));
+        cJSON_AddItemToObject(readings, "sa5", cJSON_CreateNumber(get_device_status(SA5)));
+        cJSON_AddItemToObject(readings, "sa6", cJSON_CreateNumber(get_device_status(SA6)));
         char *string = cJSON_Print(readings);
 
         send(new_socket, string, strlen(string), 0);
