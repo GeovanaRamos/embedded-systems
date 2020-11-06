@@ -37,27 +37,27 @@ int init_gpio() {
 void change_status(int code, char *mode, uint8_t on) {
     switch (code) {
         case 11:
-            printf("%s Lampada 1", mode);
+            printf("%s Lampada 1\n", mode);
             bcm2835_gpio_write(L1, on);
             break;
         case 12:
-            printf("%s Lampada 2", mode);
+            printf("%s Lampada 2\n", mode);
             bcm2835_gpio_write(L2, on);
             break;
         case 13:
-            printf("%s Lampada 3", mode);
+            printf("%s Lampada 3\n", mode);
             bcm2835_gpio_write(L3, on);
             break;
         case 14:
-            printf("%s Lampada 4", mode);
+            printf("%s Lampada 4\n", mode);
             bcm2835_gpio_write(L4, on);
             break;
         case 21:
-            printf("%s Ar 1", mode);
+            printf("%s Ar 1\n", mode);
             bcm2835_gpio_write(AR1, on);
             break;
         case 22:
-            printf("%s Ar 2", mode);
+            printf("%s Ar 2\n", mode);
             bcm2835_gpio_write(AR2, on);
             break;
         default:
