@@ -13,12 +13,9 @@ struct identifier {
 struct bme280_dev init_bme(struct identifier *id);
 struct bme280_data get_bme_data(struct bme280_dev dev);
 
-// int init_gpio();
-// void resistor_on();
-// void resistor_off();
-// void fan_on();
-// void fan_off();
-// void close_gpio();
+int init_gpio();
+void turn_on_device(int code);
+void turn_off_device(int code);
 
 void init_socket(); 
 void *read_command(void *arg);

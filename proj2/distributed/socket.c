@@ -54,40 +54,13 @@ void *read_command(void *arg) {
 
         if (valread == 0)
             break;
-        
-        printf("val %d", valread);
 
         int code = atoi(buffer + 1);
-        int device = code / 10;
 
         if (strstr(buffer, "L") != NULL) {
-            
-            switch (device) {
-                case 1:
-                    printf("Ligando Lampada %d\n", code % 10);
-                    break;
-                case 2:
-                    printf("Ligando Ar %d\n", code % 10);
-                    break;
-
-                default:
-                    break;
-            }
-
+            turn_on_device(code);
         } else if (strstr(buffer, "D") != NULL) {
-
-            switch (device) {
-                case 1:
-                    printf("Desligando Lampada %d\n", code % 10);
-                    break;
-                case 2:
-                    printf("Desligando Ar %d\n", code % 10);
-                    break;
-
-                default:
-                    break;
-            }
-
+            turn_on_device(code);
         } else {
             printf("Mudando a temperatura para %d\n", code);
         } 

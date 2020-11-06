@@ -1,4 +1,4 @@
-SOURCES.c= main.c socket.c ./cjson/cJSON.c #read_bme.c ./bme_lib/bme280.c write_gpio.c ./bcm_lib/bcm2835.c
+SOURCES.c= main.c socket.c ./cjson/cJSON.c read_bme.c ./bme_lib/bme280.c write_gpio.c ./bcm_lib/bcm2835.c
 CFLAGS=
 SLIBS= -lpthread
 PROGRAM= main
