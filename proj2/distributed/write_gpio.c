@@ -48,6 +48,14 @@ int init_gpio() {
     bcm2835_gpio_fsel(L4_PIN, BCM2835_GPIO_FSEL_OUTP);
     bcm2835_gpio_fsel(AR1_PIN, BCM2835_GPIO_FSEL_OUTP);
     bcm2835_gpio_fsel(AR2_PIN, BCM2835_GPIO_FSEL_OUTP);
+    bcm2835_gpio_fsel(SP1_PIN, BCM2835_GPIO_FSEL_OUTP);
+    bcm2835_gpio_fsel(SP2_PIN, BCM2835_GPIO_FSEL_OUTP);
+    bcm2835_gpio_fsel(SA1_PIN, BCM2835_GPIO_FSEL_OUTP);
+    bcm2835_gpio_fsel(SA2_PIN, BCM2835_GPIO_FSEL_OUTP);
+    bcm2835_gpio_fsel(SA3_PIN, BCM2835_GPIO_FSEL_OUTP);
+    bcm2835_gpio_fsel(SA4_PIN, BCM2835_GPIO_FSEL_OUTP);
+    bcm2835_gpio_fsel(SA5_PIN, BCM2835_GPIO_FSEL_OUTP);
+    bcm2835_gpio_fsel(SA6_PIN, BCM2835_GPIO_FSEL_OUTP);
 }
 
 void change_status(int code, char *mode, uint8_t on) {
@@ -124,6 +132,12 @@ int get_device_status(int code) {
             break;
         case AR2:
             return pins.ar2;
+            break;
+        case SP1:
+            return pins.sp1;
+            break;
+        case SP2:
+            return pins.sp2;
             break;
         case SA1:
             return pins.sa1;
