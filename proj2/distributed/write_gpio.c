@@ -9,8 +9,10 @@
 #define AR2 RPI_GPIO_P1_18  //24
 
 int init_gpio() {
-    if (!bcm2835_init())
-        return 1;
+    if (!bcm2835_init()){
+        printf("Erro gpio");
+        exit(1);
+    }
 
     bcm2835_gpio_fsel(L1, BCM2835_GPIO_FSEL_OUTP);
     bcm2835_gpio_fsel(L2, BCM2835_GPIO_FSEL_OUTP);
@@ -57,4 +59,14 @@ void turn_on_device(int code) {
 
 void turn_off_device(int code) {
     change_status(code, "Desligando", HIGH);
+}
+
+void close_gpio(){
+    turn_off_device(11);
+    turn_off_device(12);
+    turn_off_device(13);
+    turn_off_device(14);
+    turn_off_device(21);
+    turn_off_device(22);
+    bcm2835_close();
 }
