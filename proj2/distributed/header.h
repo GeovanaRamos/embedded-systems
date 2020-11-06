@@ -17,6 +17,7 @@ int init_gpio();
 void turn_on_device(int code);
 void turn_off_device(int code);
 void close_gpio();
+int get_device_status(int code);
 
 void init_socket(); 
 void *read_command(void *arg);

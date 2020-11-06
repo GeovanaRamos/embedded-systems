@@ -8,8 +8,19 @@
 #define AR1 RPI_GPIO_P1_16  //23
 #define AR2 RPI_GPIO_P1_18  //24
 
+struct status {
+    int l1;
+    int l2;
+    int l3;
+    int l4;
+    int ar1;
+    int ar2;
+};
+
+struct status pins = {0};
+
 int init_gpio() {
-    if (!bcm2835_init()){
+    if (!bcm2835_init()) {
         printf("Erro gpio");
         exit(1);
     }
@@ -20,9 +31,10 @@ int init_gpio() {
     bcm2835_gpio_fsel(L4, BCM2835_GPIO_FSEL_OUTP);
     bcm2835_gpio_fsel(AR1, BCM2835_GPIO_FSEL_OUTP);
     bcm2835_gpio_fsel(AR2, BCM2835_GPIO_FSEL_OUTP);
+
 }
 
-void change_status(int code, char *mode, uint8_t on){
+void change_status(int code, char *mode, uint8_t on) {
     switch (code) {
         case 11:
             printf("%s Lampada 1", mode);
@@ -61,7 +73,7 @@ void turn_off_device(int code) {
     change_status(code, "Desligando", HIGH);
 }
 
-void close_gpio(){
+void close_gpio() {
     turn_off_device(11);
     turn_off_device(12);
     turn_off_device(13);
@@ -69,4 +81,29 @@ void close_gpio(){
     turn_off_device(21);
     turn_off_device(22);
     bcm2835_close();
+}
+
+int get_device_status(int code) {
+    switch (code) {
+        case 11:
+            return pins.l1;
+            break;
+        case 12:
+            return pins.l2;
+            break;
+        case 13:
+            return pins.l3;
+            break;
+        case 14:
+            return pins.l4;
+            break;
+        case 21:
+            return pins.ar1;
+            break;
+        case 22:
+            return pins.ar2;
+            break;
+        default:
+            break;
+    }
 }
