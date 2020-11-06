@@ -39,26 +39,32 @@ void change_status(int code, char *mode, uint8_t on) {
         case 11:
             printf("%s Lampada 1\n", mode);
             bcm2835_gpio_write(L1, on);
+            pins.l1 = (on == HIGH) ? 0 : 1;
             break;
         case 12:
             printf("%s Lampada 2\n", mode);
             bcm2835_gpio_write(L2, on);
+            pins.l2 = (on == HIGH) ? 0 : 1;
             break;
         case 13:
             printf("%s Lampada 3\n", mode);
             bcm2835_gpio_write(L3, on);
+            pins.l3 = (on == HIGH) ? 0 : 1;
             break;
         case 14:
             printf("%s Lampada 4\n", mode);
             bcm2835_gpio_write(L4, on);
+            pins.l4 = (on == HIGH) ? 0 : 1;
             break;
         case 21:
             printf("%s Ar 1\n", mode);
             bcm2835_gpio_write(AR1, on);
+            pins.ar1 = (on == HIGH) ? 0 : 1;
             break;
         case 22:
             printf("%s Ar 2\n", mode);
             bcm2835_gpio_write(AR2, on);
+            pins.ar2 = (on == HIGH) ? 0 : 1;
             break;
         default:
             break;
