@@ -100,4 +100,8 @@ void wifi_start() {
     vEventGroupDelete(s_wifi_event_group);
 }
 
-void wifi_stop();
+uint8_t get_mac_address(){
+    uint8_t base_mac_addr[6] = {0};
+
+    return esp_efuse_mac_get_custom(base_mac_addr);
+}
