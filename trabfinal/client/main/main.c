@@ -43,6 +43,7 @@ void app_main(void) {
     wifi_start();
     xTaskCreate(&watch_wifi, "Monitora Wifi", 4096, NULL, 1, NULL);
     xTaskCreate(&watch_button, "Monitora Botão", 4096, NULL, 1, NULL);
+    xTaskCreate(&read_dht11, "Ler dht11", 4096, NULL, 1, NULL);
 
     while (true) {
         vTaskDelay(500000 / portTICK_PERIOD_MS);
