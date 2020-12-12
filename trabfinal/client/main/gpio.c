@@ -25,12 +25,8 @@ void init_gpio() {
     DHT11_init(SENSOR);
 }
 
-void keep_led_on() {
-    gpio_set_level(LED, 1);
-}
-
-void keep_led_off() {
-    gpio_set_level(LED, 0);
+void change_led_status(int status) {
+    gpio_set_level(LED, status);
 }
 
 int get_button_state() {

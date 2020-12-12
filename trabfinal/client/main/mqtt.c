@@ -1,4 +1,5 @@
 #include "mqtt.h"
+#include "gpio.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -52,6 +53,17 @@ void save_room_name(char *json) {
     xSemaphoreGive(configSemaphore);
 }
 
+void parse_led_status(char *json){
+    ESP_LOGI(TAG, "Change led");
+    
+    // "{\"status\":1}"
+    cJSON *root = cJSON_Parse(json);
+    int json_status = cJSON_GetObjectItemCaseSensitive(root, "status")->valueint;
+    change_led_status(json_status);
+    cJSON_Delete(root);
+
+}
+
 static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
     esp_mqtt_client_handle_t client = event->client;
 
@@ -80,7 +92,7 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
             printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
             printf("DATA=%.*s\r\n", event->data_len, event->data);
             if (is_configured)
-                ESP_LOGI(TAG, "LIgar led");
+                parse_led_status(event->data);
             else
                 save_room_name(event->data);
             break;
