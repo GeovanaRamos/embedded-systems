@@ -7,10 +7,32 @@
 #include "gpio.h"
 #include "nvs_flash.h"
 #include "wifi.h"
-#include "parse.h"
 
 xSemaphoreHandle wifiSemaphore;
 xSemaphoreHandle configSemaphore;
+
+void watch_button(void* params) {
+    while (true) {
+        int button_state = get_button_state();
+        
+        if (!button_state){
+            ESP_LOGI("GPIO", "Button pressed");
+            publish_readings("estado", 1);
+        } 
+
+        vTaskDelay(500 / portTICK_PERIOD_MS);
+    }
+}
+
+void read_dht11(void* params){
+    while (true) {
+        
+        publish_readings("temperatura", get_temperature());
+        publish_readings("umidade", get_humidity());
+        
+        vTaskDelay(30000 / portTICK_PERIOD_MS);
+    }
+}
 
 void watch_wifi(void *params) {
     while (true) {

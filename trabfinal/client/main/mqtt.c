@@ -28,12 +28,6 @@ int msg_id;
 int is_configured = 0; 
 char *room;
 
-char get_status_topic_name(char *mode){
-    char topic[50];
-    sprintf(topic, "fse2020/160122180/%s/%s", room, mode);
-    return *topic;
-}
-
 void esp_init_config() {
     ESP_LOGI(TAG, "Init esp as topic's client");
 
@@ -46,8 +40,12 @@ void esp_init_config() {
 
 void save_room_name(char *json) {
     ESP_LOGI(TAG, "Save room name");
+    
+    // "{\"room\":\"sala\"}"
     cJSON *root = cJSON_Parse(json);
-    room = cJSON_GetObjectItemCaseSensitive(root, "room")->valuestring;
+    char *json_room = cJSON_GetObjectItemCaseSensitive(root, "room")->valuestring;
+    room = malloc(sizeof(json_room));
+    strcpy(room, json_room);
     cJSON_Delete(root);
 
     is_configured = 1;
@@ -81,10 +79,10 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
             ESP_LOGI(TAG, "MQTT_EVENT_DATA");
             printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
             printf("DATA=%.*s\r\n", event->data_len, event->data);
-            if (!is_configured)
-                save_room_name(event->data);
+            if (is_configured)
+                ESP_LOGI(TAG, "LIgar led");
             else
-                ESP_LOGI(TAG, "Turn led on");
+                save_room_name(event->data);
             break;
         case MQTT_EVENT_ERROR:
             ESP_LOGI(TAG, "MQTT_EVENT_ERROR");
@@ -103,8 +101,8 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 
 void mqtt_start() {
     esp_mqtt_client_config_t mqtt_config = {
-        .uri = "mqtt://192.168.15.5:1883",
-        //.uri="mqtt://broker.emqx.io"
+       // .uri = "mqtt://192.168.15.9:1883",
+        .uri="mqtt://broker.emqx.io"
         //.uri="mqtt://test.mosquitto.org"
         //.uri = "mqtt://mqtt.eclipse.org",
     };
@@ -113,7 +111,19 @@ void mqtt_start() {
     esp_mqtt_client_start(client);
 }
 
-void mqtt_publish(char *topico, char *mensagem) {
-    int message_id = esp_mqtt_client_publish(client, topico, mensagem, 0, 1, 0);
-    ESP_LOGI(TAG, "Mensagem enviada, ID: %d", message_id);
+void mqtt_publish(char *topic, char *message) {
+    int message_id = esp_mqtt_client_publish(client, topic, message, 0, 1, 0);
+    ESP_LOGI(TAG, "Mensagem enviada, ID: %d, T: %s", message_id, topic);
+}
+
+void publish_readings(char *mode, int data){
+    char topic[50];
+    char json[50];
+
+    printf("%s", room);
+    
+    sprintf(topic, "fse2020/160122180/%s/%s", room, mode);
+    sprintf(json, "{\"%s\":%d}", mode, data);
+    
+    mqtt_publish(topic, json);
 }

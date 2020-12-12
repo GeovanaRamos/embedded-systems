@@ -1,5 +1,6 @@
 void init_gpio();
-void blink_led();
 void keep_led_on();
-void watch_button(void* params); 
-void read_dht11(void* params);
+void keep_led_off();
+int get_button_state();
+int get_temperature();
+int get_humidity();
