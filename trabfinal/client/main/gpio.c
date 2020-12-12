@@ -33,10 +33,9 @@ void init_gpio() {
 }
 
 void watch_button(void* params) {
-    // Testa o Botão utilizando polling
     while (true) {
-        int estado_botao = gpio_get_level(BOTAO);
-        if (!estado_botao){
+        int button_state = gpio_get_level(BOTAO);
+        if (!button_state){
             ESP_LOGI("GPIO", "Apertou botão");
         }
         vTaskDelay(500 / portTICK_PERIOD_MS);
@@ -55,9 +54,12 @@ void blink_led() {
 
 void read_dht11(void* params){
     while (true) {
-        printf("Temperature is %d \n", DHT11_read().temperature);
-        printf("Humidity is %d\n", DHT11_read().humidity);
-        printf("Status code is %d\n", DHT11_read().status);
-        vTaskDelay(2000 / portTICK_PERIOD_MS);
+        char temp[5], hum[5];
+        sprintf(temp, "%d", DHT11_read().temperature);
+        sprintf(hum, "%d", DHT11_read().humidity);
+        printf("T=%s U=%s\n", temp, hum);
+        mqtt_publish("fse2020/160122180/sala/temperatura", temp);
+        mqtt_publish("fse2020/160122180/sala/humidade", hum);
+        vTaskDelay(5000 / portTICK_PERIOD_MS);
     }
 }

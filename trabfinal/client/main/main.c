@@ -10,13 +10,12 @@
 #include "parse.h"
 
 xSemaphoreHandle wifiSemaphore;
-double lat, lon, temp, temp_min, temp_max, hum;
-
+xSemaphoreHandle configSemaphore;
 
 void watch_wifi(void *params) {
     while (true) {
         if (xSemaphoreTake(wifiSemaphore, portMAX_DELAY)) {
-            ESP_LOGI("MAIN", "Wifi OK - Keep led on");
+            ESP_LOGI("MAIN", "Wifi OK, init MQTT");
             mqtt_start();
 
             vTaskDelete(NULL);
@@ -34,18 +33,21 @@ void init_nvs() {
 }
 
 void app_main(void) {
-    init_nvs();
+    wifiSemaphore = xSemaphoreCreateBinary();
+    configSemaphore = xSemaphoreCreateBinary();
+
+    init_nvs(); // verifica se configurou
     init_gpio();
     init_wifi();
 
-    wifiSemaphore = xSemaphoreCreateBinary();
-
     wifi_start();
-    xTaskCreate(&watch_wifi, "Monitora Wifi", 4096, NULL, 1, NULL);
-    xTaskCreate(&watch_button, "Monitora Botão", 4096, NULL, 1, NULL);
-    xTaskCreate(&read_dht11, "Ler dht11", 4096, NULL, 1, NULL);
 
-    while (true) {
-        vTaskDelay(500000 / portTICK_PERIOD_MS);
+    xTaskCreate(&watch_wifi, "Monitora Wifi", 4096, NULL, 1, NULL);
+
+    if (xSemaphoreTake(configSemaphore, portMAX_DELAY)){
+        xTaskCreate(&watch_button, "Monitora Botão", 4096, NULL, 1, NULL);
+        xTaskCreate(&read_dht11, "Ler dht11", 4096, NULL, 1, NULL);
     }
+    
+
 }

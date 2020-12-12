@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "cJSON.h"
 #include "esp_event.h"
 #include "esp_log.h"
 #include "esp_netif.h"
@@ -20,9 +21,38 @@
 
 #define TAG "MQTT"
 
+extern xSemaphoreHandle configSemaphore;
+
 esp_mqtt_client_handle_t client;
 int msg_id;
-int comodo;
+int is_configured = 0; 
+char *room;
+
+char get_status_topic_name(char *mode){
+    char topic[50];
+    sprintf(topic, "fse2020/160122180/%s/%s", room, mode);
+    return *topic;
+}
+
+void esp_init_config() {
+    ESP_LOGI(TAG, "Init esp as topic's client");
+
+    char topic[50];
+    sprintf(topic, "fse2020/160122180/dispositivos/%s", "1234");
+    
+    mqtt_publish(topic, "{\"command\":\"init\"}");
+    msg_id = esp_mqtt_client_subscribe(client, topic, 0);
+}
+
+void save_room_name(char *json) {
+    ESP_LOGI(TAG, "Save room name");
+    cJSON *root = cJSON_Parse(json);
+    room = cJSON_GetObjectItemCaseSensitive(root, "room")->valuestring;
+    cJSON_Delete(root);
+
+    is_configured = 1;
+    xSemaphoreGive(configSemaphore);
+}
 
 static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
     esp_mqtt_client_handle_t client = event->client;
@@ -30,6 +60,9 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
     switch (event->event_id) {
         case MQTT_EVENT_CONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
+            if (!is_configured) {
+                esp_init_config();
+            }
             break;
         case MQTT_EVENT_DISCONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
@@ -48,6 +81,10 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
             ESP_LOGI(TAG, "MQTT_EVENT_DATA");
             printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
             printf("DATA=%.*s\r\n", event->data_len, event->data);
+            if (!is_configured)
+                save_room_name(event->data);
+            else
+                ESP_LOGI(TAG, "Turn led on");
             break;
         case MQTT_EVENT_ERROR:
             ESP_LOGI(TAG, "MQTT_EVENT_ERROR");
@@ -66,9 +103,8 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 
 void mqtt_start() {
     esp_mqtt_client_config_t mqtt_config = {
-        // .host = "192.168.15.5",
-        // .port="1883",
-        .uri="mqtt://broker.emqx.io"
+        .uri = "mqtt://192.168.15.5:1883",
+        //.uri="mqtt://broker.emqx.io"
         //.uri="mqtt://test.mosquitto.org"
         //.uri = "mqtt://mqtt.eclipse.org",
     };
@@ -80,12 +116,4 @@ void mqtt_start() {
 void mqtt_publish(char *topico, char *mensagem) {
     int message_id = esp_mqtt_client_publish(client, topico, mensagem, 0, 1, 0);
     ESP_LOGI(TAG, "Mensagem enviada, ID: %d", message_id);
-}
-
-void esp_init_config(){
-    ESP_LOGI("MQTT", "Inicializa esp na rasp");
-    msg_id = esp_mqtt_client_subscribe(client, "fse2020/160122180/dispositivos/1234", 0);
-    mqtt_publish("fse2020/160122180/dispositivos/1234", "Inicializando");
-    comodo = 1; 
-    //trocar por mensagem de retorno
 }
