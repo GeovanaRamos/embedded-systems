@@ -32,8 +32,12 @@ char *room;
 void esp_init_config() {
     ESP_LOGI(TAG, "Init esp as topic's client");
 
+    uint8_t mac[6] = {0};
+    esp_efuse_mac_get_default(mac);
+
     char topic[50];
-    sprintf(topic, "fse2020/160122180/dispositivos/%s", "1234");
+    sprintf(topic, "fse2020/160122180/dispositivos/%x%x%x%x%x%x", 
+        mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
     
     mqtt_publish(topic, "{\"command\":\"init\"}");
     msg_id = esp_mqtt_client_subscribe(client, topic, 0);
@@ -131,8 +135,6 @@ void mqtt_publish(char *topic, char *message) {
 void publish_readings(char *mode, int data){
     char topic[50];
     char json[50];
-
-    printf("%s", room);
     
     sprintf(topic, "fse2020/160122180/%s/%s", room, mode);
     sprintf(json, "{\"%s\":%d}", mode, data);
