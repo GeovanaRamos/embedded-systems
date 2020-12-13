@@ -1,6 +1,6 @@
-SOURCES.c= main.c menu.c socket.c ./cjson/cJSON.c csv.c alarm.c
+SOURCES.c= main.c menu.c socket.c csv.c 
 CFLAGS=
-SLIBS= -lncurses -lpthread
+SLIBS= -lncurses -lpthread -lpaho-mqtt3c
 PROGRAM= main
 CC = gcc
 
