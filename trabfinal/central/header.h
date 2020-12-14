@@ -37,5 +37,6 @@ void create_client(char *mac);
 void config_client(char *room, char *input_name, char *output_name);
 struct Client* get_client(char* mac);
 void release_clients();
+struct Client* get_client_by_index(int index);
 
 #endif  

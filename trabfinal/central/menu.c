@@ -97,13 +97,21 @@ void parse_menu_option(int option) {
     sprintf(code, "%d", option);
     add_to_csv(code);
 
-    switch (option) {
-        case 100:
-            config_client_menu();
-            break;
+    if(option==0)
+        return;
+    else if (option!=100){
+        int turn_on = option / 10;
+        int client_index = option % 10;
+        struct Client *client = get_client_by_index(client_index);
+        
+        char json[30], topic[50];
+        sprintf(json, "{\"value\":%d}", turn_on);
+        sprintf(topic, "fse2020/160122180/dispositivos/%s", client->mac);
+        publish(topic, json);
 
-        default:
-            break;
+        client->output_value = turn_on; 
+    } else {
+        config_client_menu();
     }
     
 }
@@ -119,9 +127,9 @@ void *read_menu(void *arg) {
         mvwprintw(menu, LINE_START + 4, 0, "Ex: Para ligar (3)Comodo-Entrada digite 13.");
 
         struct Client *client = head;
-        int i = 0;
+        int i = 1;
         while (client != NULL) {
-            mvwprintw(menu, LINE_START + 6 + i, 0, "(%d)%s-%s", i, client->room, client->input);
+            mvwprintw(menu, LINE_START + 6 + i, 0, "(%d)%s-%s", i, client->room, client->output);
             i++;
             client = client->next;
         }

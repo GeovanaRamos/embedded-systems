@@ -57,3 +57,14 @@ void release_clients() {
         }
     }
 }
+
+struct Client* get_client_by_index(int index){
+    struct Client* client = head;
+    int i = 1;
+    while (client != NULL) {
+        if (i==index)
+            return client;
+        client = client->next;
+        i++;
+    }
+}
