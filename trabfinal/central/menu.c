@@ -85,6 +85,9 @@ void config_client_menu() {
 
 void parse_menu_option(int option) {
     char code[4];
+    
+    sprintf(code, "%d", option);
+    add_to_csv(code);
 
     switch (option) {
         case 100:
@@ -94,8 +97,7 @@ void parse_menu_option(int option) {
         default:
             break;
     }
-    sprintf(code, "%d", option);
-    add_to_csv(code);
+    
 }
 
 void *read_menu(void *arg) {
