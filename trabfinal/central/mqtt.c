@@ -4,15 +4,24 @@
 #include <string.h>
 
 #include "header.h"
+#include "cjson/cJSON.h"
 
 MQTTClient client;
+
+void parse_message(char* topicName, char* payload) {
+    
+    if (strstr(topicName, "dispositivos") != NULL) {
+        cJSON *root = cJSON_Parse(payload);
+        char *mac = cJSON_GetObjectItemCaseSensitive(root, "mac")->valuestring;
+        create_client(mac);
+    }
+
+}
 
 int on_message(void* context, char* topicName, int topicLen, MQTTClient_message* message) {
     char* payload = message->payload;
 
-    //printf("Mensagem recebida! \n\rTopico: %s Mensagem: %s\n", topicName, payload);
-
-    //publish(client, MQTT_PUBLISH_TOPIC, payload);
+    parse_message(topicName, payload);
 
     MQTTClient_freeMessage(&message);
     MQTTClient_free(topicName);
@@ -47,8 +56,6 @@ void publish(char* topic, char* payload) {
     MQTTClient_publishMessage(client, topic, &pubmsg, &token);
     MQTTClient_waitForCompletion(client, token, 1000L);
 }
-
-
 
 // void *get_readings(){
 //     char *buffer;

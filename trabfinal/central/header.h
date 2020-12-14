@@ -14,12 +14,13 @@ struct Client {
     int output_value;
     int temperature;
     int humidity;
-    int mac;
+    char *mac;
     struct Client* next; 
 }; 
 
 extern struct Client* head;
-extern int option;
+extern struct Client* tail;
+extern struct Client* new_client;
 
 void publish(char* topic, char* payload);
 void init_mqtt();
@@ -31,5 +32,10 @@ void shut_down_menu();
 
 void create_csv();
 void add_to_csv(char *code);
+
+void create_client(char *mac);
+void config_client(char *room, char *input_name, char *output_name);
+struct Client* get_client(char* mac);
+void release_clients();
 
 #endif  

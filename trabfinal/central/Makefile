@@ -1,4 +1,4 @@
-SOURCES.c= main.c menu.c socket.c csv.c 
+SOURCES.c= main.c menu.c mqtt.c csv.c clients.c cjson/cJSON.c
 CFLAGS=
 SLIBS= -lncurses -lpthread -lpaho-mqtt3c
 PROGRAM= main
