@@ -9,13 +9,29 @@
 MQTTClient client;
 
 void parse_message(char* topic, char* payload) {
-    
-    if (strstr(topic, "dispositivos") != NULL) {
-        cJSON *root = cJSON_Parse(payload);
-        cJSON *mac = cJSON_GetObjectItemCaseSensitive(root, "mac");
-        if(cJSON_IsString(mac) && mac->valuestring!=NULL)
-            create_client(mac->valuestring);
+    cJSON *root = cJSON_Parse(payload);
+    cJSON *mac = cJSON_GetObjectItemCaseSensitive(root, "mac");
+
+    if(!cJSON_IsString(mac) || mac->valuestring==NULL)
+        return;
+
+    cJSON *value = cJSON_GetObjectItemCaseSensitive(root, "value");
+    cJSON *input = cJSON_GetObjectItemCaseSensitive(root, "input");
+
+    if(cJSON_IsNumber(value)){
+        struct Client *client = get_client(mac->valuestring);
+        if (strstr(topic, "temperatura") != NULL)
+            client->temperature = value->valueint;
+        else if (strstr(topic, "umidade") != NULL)
+            client->humidity = value->valueint;
+        else if (input->valueint == 1)
+            client->input_value = value->valueint;
+        else if (input->valueint == 0)
+            client->output_value = value->valueint;
+    } else {
+        create_client(mac->valuestring);
     }
+    
 
 }
 
@@ -43,7 +59,7 @@ void init_mqtt() {
         exit(-1);
     }
 
-    MQTTClient_subscribe(client, "fse2020/160122180/dispositivos/#", 0);
+    MQTTClient_subscribe(client, "fse2020/160122180/#", 0);
 }
 
 void publish(char* topic, char* payload) {
