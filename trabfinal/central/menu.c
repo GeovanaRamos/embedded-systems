@@ -13,8 +13,8 @@ int option = -1;
 void init_menu() {
     initscr();
 
-    logs = newwin(8, 1500, 0, 0);
-    menu = newwin(16, 1500, 10, 0);
+    logs = newwin(8, 800, 0, 0);
+    menu = newwin(16, 800, 10, 0);
 }
 
 void *display_logs(void *arg) {
@@ -61,31 +61,39 @@ void *display_logs(void *arg) {
 
 void config_client_menu() {
     wclear(menu);
-    char room[50], input_name[50], output_name[50], log[50];
+    char room[50], input_name[50], output_name[50], log[50], *topic, *json;
 
     mvwprintw(menu, LINE_START + 2, 0, "ADICIONANDO NOVO CLIENTE");
 
     mvwprintw(menu, LINE_START + 2, 0, "Digite o nome do comodo: \n");
     wrefresh(menu);
-    mvwscanw(menu, LINE_START + 2, 100, "%s", room);
+    mvwscanw(menu, LINE_START + 2, 60, "%s", room);
 
     mvwprintw(menu, LINE_START + 3, 0, "Digite o nome do dispositivo de entrada: \n");
     wrefresh(menu);
-    mvwscanw(menu, LINE_START + 3, 100, "%s", input_name);
+    mvwscanw(menu, LINE_START + 3, 60, "%s", input_name);
 
     mvwprintw(menu, LINE_START + 4, 0, "Digite o nome do dispositivo de saida: \n");
     wrefresh(menu);
-    mvwscanw(menu, LINE_START + 4, 100, "%s", output_name);
+    mvwscanw(menu, LINE_START + 4, 60, "%s", output_name);
 
     config_client(room, input_name, output_name);
 
     sprintf(log, "Configurou cliente com mac %s", tail->mac);
     add_to_csv(log);
+
+    topic = malloc(sizeof(tail->mac)+40);
+    sprintf(topic, "fse2020/160122180/dispositivos/%s", tail->mac);
+    json = malloc(sizeof(room)+20);
+    sprintf(json, "{\"room\":\"%s\"}", room);
+    publish(topic, json);
+    free(topic);
+    free(json);
 }
 
 void parse_menu_option(int option) {
     char code[4];
-    
+
     sprintf(code, "%d", option);
     add_to_csv(code);
 
@@ -124,7 +132,6 @@ void *read_menu(void *arg) {
 
         mvwscanw(menu, SCAN_LINE, SCAN_COL, "%d", &option);
         parse_menu_option(option);
-        wclear(menu);
 
         sleep(1);
     }

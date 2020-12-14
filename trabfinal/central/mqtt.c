@@ -8,23 +8,24 @@
 
 MQTTClient client;
 
-void parse_message(char* topicName, char* payload) {
+void parse_message(char* topic, char* payload) {
     
-    if (strstr(topicName, "dispositivos") != NULL) {
+    if (strstr(topic, "dispositivos") != NULL) {
         cJSON *root = cJSON_Parse(payload);
-        char *mac = cJSON_GetObjectItemCaseSensitive(root, "mac")->valuestring;
-        create_client(mac);
+        cJSON *mac = cJSON_GetObjectItemCaseSensitive(root, "mac");
+        if(cJSON_IsString(mac) && mac->valuestring!=NULL)
+            create_client(mac->valuestring);
     }
 
 }
 
-int on_message(void* context, char* topicName, int topicLen, MQTTClient_message* message) {
+int on_message(void* context, char* topic, int topic_len, MQTTClient_message* message) {
     char* payload = message->payload;
 
-    parse_message(topicName, payload);
+    parse_message(topic, payload);
 
     MQTTClient_freeMessage(&message);
-    MQTTClient_free(topicName);
+    MQTTClient_free(topic);
     return 1;
 }
 

@@ -5,6 +5,10 @@ void create_client(char* mac) {
     client = (struct Client*)malloc(sizeof(struct Client));
     client->mac = malloc(sizeof(mac));
     strcpy(client->mac, mac);
+    client->input_value = 0;
+    client->output_value = 0;
+    client->temperature = 0;
+    client->humidity = 0;
 
     new_client = client;
 }
@@ -43,6 +47,10 @@ void release_clients() {
         struct Client* client = head;
         struct Client* next = client->next;
         while (client != NULL) {
+            free(client->room);
+            free(client->input);
+            free(client->output);
+            free(client->mac);
             next = client->next;
             free(client);
             client = next;
