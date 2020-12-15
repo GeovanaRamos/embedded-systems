@@ -38,8 +38,12 @@ void esp_init_config() {
     char topic[50];
     sprintf(topic, "fse2020/160122180/dispositivos/%x%x%x%x%x%x", 
         mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+
+    char json[50];
+    sprintf(json, "{\"mac\":\"%x%x%x%x%x%x\"}", 
+        mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
     
-    mqtt_publish(topic, "{\"command\":\"init\"}");
+    mqtt_publish(topic, json);
     msg_id = esp_mqtt_client_subscribe(client, topic, 0);
 }
 
@@ -60,9 +64,9 @@ void save_room_name(char *json) {
 void parse_led_status(char *json){
     ESP_LOGI(TAG, "Change led");
     
-    // "{\"status\":1}"
+    // "{\"value\":1}"
     cJSON *root = cJSON_Parse(json);
-    int json_status = cJSON_GetObjectItemCaseSensitive(root, "status")->valueint;
+    int json_status = cJSON_GetObjectItemCaseSensitive(root, "value")->valueint;
     change_led_status(json_status);
     cJSON_Delete(root);
 
@@ -136,8 +140,13 @@ void publish_readings(char *mode, int data){
     char topic[50];
     char json[50];
     
+    uint8_t mac[6] = {0};
+    esp_efuse_mac_get_default(mac);
+
+    sprintf(json, "{\"mac\":\"%x%x%x%x%x%x\", \"value\": %d }", 
+        mac[0], mac[1], mac[2], mac[3], mac[4], mac[5], data);
+
     sprintf(topic, "fse2020/160122180/%s/%s", room, mode);
-    sprintf(json, "{\"%s\":%d}", mode, data);
     
     mqtt_publish(topic, json);
 }

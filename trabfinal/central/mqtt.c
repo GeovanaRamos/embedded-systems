@@ -16,7 +16,6 @@ void parse_message(char* topic, char* payload) {
         return;
 
     cJSON* value = cJSON_GetObjectItemCaseSensitive(root, "value");
-    cJSON* input = cJSON_GetObjectItemCaseSensitive(root, "input");
 
     if (cJSON_IsNumber(value)) {
         struct Client* client = get_client(mac->valuestring);
@@ -24,10 +23,8 @@ void parse_message(char* topic, char* payload) {
             client->temperature = value->valueint;
         else if (strstr(topic, "umidade") != NULL)
             client->humidity = value->valueint;
-        else if (input->valueint == 1)
+        else if (strstr(topic, "estado"))
             client->input_value = value->valueint;
-        else if (input->valueint == 0)
-            client->output_value = value->valueint;
     } else {
         create_client(mac->valuestring);
     }

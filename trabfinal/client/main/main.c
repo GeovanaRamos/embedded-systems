@@ -14,11 +14,19 @@ xSemaphoreHandle configSemaphore;
 void watch_button(void* params) {
     while (true) {
         int button_state = get_button_state();
+        int previous = 0;
         
         if (!button_state){
             ESP_LOGI("GPIO", "Button pressed");
             publish_readings("estado", 1);
+            vTaskDelay(2000 / portTICK_PERIOD_MS);
+            previous = 1;
         } 
+        
+        if (previous == 1) {
+            publish_readings("estado", 0);
+            previous = 0;
+        }
 
         vTaskDelay(500 / portTICK_PERIOD_MS);
     }
