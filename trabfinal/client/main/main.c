@@ -3,26 +3,27 @@
 #include "esp_event.h"
 #include "esp_log.h"
 #include "freertos/semphr.h"
-#include "mqtt.h"
 #include "gpio.h"
-#include "nvs_flash.h"
+#include "mqtt.h"
 #include "wifi.h"
+#include "nvs.h"
 
 xSemaphoreHandle wifiSemaphore;
 xSemaphoreHandle configSemaphore;
 
 void watch_button(void* params) {
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
     while (true) {
         int button_state = get_button_state();
         int previous = 0;
-        
-        if (!button_state){
+
+        if (!button_state) {
             ESP_LOGI("GPIO", "Button pressed");
             publish_readings("estado", 1);
             vTaskDelay(2000 / portTICK_PERIOD_MS);
             previous = 1;
-        } 
-        
+        }
+
         if (previous == 1) {
             publish_readings("estado", 0);
             previous = 0;
@@ -32,20 +33,20 @@ void watch_button(void* params) {
     }
 }
 
-void read_dht11(void* params){
+void read_dht11(void* params) {
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
     while (true) {
-        
         publish_readings("temperatura", get_temperature());
         publish_readings("umidade", get_humidity());
-        
+
         vTaskDelay(30000 / portTICK_PERIOD_MS);
     }
 }
 
-void watch_wifi(void *params) {
+void watch_wifi(void* params) {
     while (true) {
         if (xSemaphoreTake(wifiSemaphore, portMAX_DELAY)) {
-            ESP_LOGI("MAIN", "Wifi OK, init MQTT");
+            ESP_LOGI("MAIN", "WIFI OK, Start mqtt");
             mqtt_start();
 
             vTaskDelete(NULL);
@@ -53,20 +54,11 @@ void watch_wifi(void *params) {
     }
 }
 
-void init_nvs() {
-    esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        ret = nvs_flash_init();
-    }
-    ESP_ERROR_CHECK(ret);
-}
-
 void app_main(void) {
     wifiSemaphore = xSemaphoreCreateBinary();
     configSemaphore = xSemaphoreCreateBinary();
 
-    init_nvs(); // verifica se configurou
+    init_nvs();
     init_gpio();
     init_wifi();
 
@@ -74,10 +66,8 @@ void app_main(void) {
 
     xTaskCreate(&watch_wifi, "Monitora Wifi", 4096, NULL, 1, NULL);
 
-    if (xSemaphoreTake(configSemaphore, portMAX_DELAY)){
+    if (xSemaphoreTake(configSemaphore, portMAX_DELAY)) {
         xTaskCreate(&watch_button, "Monitora Botão", 4096, NULL, 1, NULL);
         xTaskCreate(&read_dht11, "Ler dht11", 4096, NULL, 1, NULL);
     }
-    
-
 }

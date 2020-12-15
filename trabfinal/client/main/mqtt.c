@@ -1,5 +1,6 @@
 #include "mqtt.h"
 #include "gpio.h"
+#include "nvs.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -43,8 +44,13 @@ void esp_init_config() {
     sprintf(json, "{\"mac\":\"%x%x%x%x%x%x\"}", 
         mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
     
-    mqtt_publish(topic, json);
     msg_id = esp_mqtt_client_subscribe(client, topic, 0);
+
+    if (is_configured){
+        xSemaphoreGive(configSemaphore);
+    } else {
+        mqtt_publish(topic, json);
+    }
 }
 
 void save_room_name(char *json) {
@@ -58,6 +64,7 @@ void save_room_name(char *json) {
     cJSON_Delete(root);
 
     is_configured = 1;
+    write_room_to_nvs(room);
     xSemaphoreGive(configSemaphore);
 }
 
@@ -78,9 +85,7 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
     switch (event->event_id) {
         case MQTT_EVENT_CONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
-            if (!is_configured) {
-                esp_init_config();
-            }
+            esp_init_config();
             break;
         case MQTT_EVENT_DISCONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
@@ -97,11 +102,11 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
             break;
         case MQTT_EVENT_DATA:
             ESP_LOGI(TAG, "MQTT_EVENT_DATA");
-            printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
-            printf("DATA=%.*s\r\n", event->data_len, event->data);
-            if (is_configured)
+            ESP_LOGI(TAG,"TOPIC=%.*s\r\n", event->topic_len, event->topic);
+            ESP_LOGI(TAG,"DATA=%.*s\r\n", event->data_len, event->data);
+            if (is_configured && strstr(event->data, "value") != NULL)
                 parse_led_status(event->data);
-            else
+            else if (!is_configured && strstr(event->data, "room") != NULL)
                 save_room_name(event->data);
             break;
         case MQTT_EVENT_ERROR:
@@ -120,6 +125,10 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 }
 
 void mqtt_start() {
+    ESP_LOGI("MQTT", "Check NVS for room name");
+    is_configured = read_room_from_nvs(&room);
+    //ESP_LOGI("MQTT", "Room name=%s", room);
+
     esp_mqtt_client_config_t mqtt_config = {
        // .uri = "mqtt://192.168.15.9:1883",
         .uri="mqtt://broker.emqx.io"

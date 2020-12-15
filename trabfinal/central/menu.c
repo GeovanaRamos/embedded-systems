@@ -103,7 +103,10 @@ void parse_menu_option(int option) {
         int turn_on = option / 10;
         int client_index = option % 10;
         struct Client *client = get_client_by_index(client_index);
-        
+
+        if (client==NULL)
+            return;
+                    
         char json[30], topic[50];
         sprintf(json, "{\"value\":%d}", turn_on);
         sprintf(topic, "fse2020/160122180/dispositivos/%s", client->mac);

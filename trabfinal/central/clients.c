@@ -40,6 +40,7 @@ struct Client* get_client(char* mac) {
             return client;
         client = client->next;
     }
+    return NULL;
 }
 
 void release_clients() {
@@ -67,4 +68,5 @@ struct Client* get_client_by_index(int index){
         client = client->next;
         i++;
     }
+    return NULL;
 }

@@ -19,6 +19,8 @@ void parse_message(char* topic, char* payload) {
 
     if (cJSON_IsNumber(value)) {
         struct Client* client = get_client(mac->valuestring);
+        if (client==NULL)
+            return;
         if (strstr(topic, "temperatura") != NULL)
             client->temperature = value->valueint;
         else if (strstr(topic, "umidade") != NULL)
