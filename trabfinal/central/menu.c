@@ -92,29 +92,29 @@ void config_client_menu() {
 }
 
 void parse_menu_option(int option) {
-    char code[4];
 
-    sprintf(code, "%d", option);
-    add_to_csv(code);
-
-    if(option==0)
+    if(option==0){
+        add_to_csv("Saiu do sistema");
         return;
-    else if (option==200){
+    }else if (option==200){
         change_alarm_status();
-    } else if (option!=100){
-        int turn_on = option / 10;
-        int client_index = option % 10;
-        struct Client *client = get_client_by_index(client_index);
+        add_to_csv("Mudou status do alarme");
+    } else if (option==100){
+        config_client_menu();
+    } else {
+        struct Client *client = get_client_by_index(option);
 
         if (client==NULL)
             return;
                     
         char json[30], topic[50];
-        sprintf(json, "{\"value\":%d}", turn_on);
+        sprintf(json, "{\"value\":%d}", 1 - client->output_value);
         sprintf(topic, "fse2020/160122180/dispositivos/%s", client->mac);
         publish(topic, json);
-    } else {
-        config_client_menu();
+
+        char log[50];
+        sprintf(log, "Mudou status do dispositivo mac=%s", client->mac);
+        add_to_csv(log);
     }
     
 }
@@ -124,10 +124,10 @@ void *read_menu(void *arg) {
         wclear(menu);
         mvwprintw(menu, LINE_START, 0, "-----------------MENU----------------\n");
 
-        mvwprintw(menu, LINE_START + 1, 0, "Para LIGAR um dispostivo digite 1 + código do dispositivo.\n");
-        mvwprintw(menu, LINE_START + 2, 0, "Para DESLIGAR um dispostivo digite 1 + código do dispositivo.\n");
-        mvwprintw(menu, LINE_START + 3, 0, "Para SAIR digite 0 e para mudar o ALARME digite 200.\n");
-        mvwprintw(menu, LINE_START + 4, 0, "Ex: Para ligar (3)Comodo-Entrada digite 13.");
+        mvwprintw(menu, LINE_START + 1, 0, "Para LIGAR/DESLIGAR um dispostivo o código do dispositivo.\n");
+        mvwprintw(menu, LINE_START + 2, 0, "Para LIGAR/DESLIGAR o alarme digite 200.\n");
+        mvwprintw(menu, LINE_START + 3, 0, "Para SAIR digite 0.\n");
+        mvwprintw(menu, LINE_START + 4, 0, "Ex: Para ligar/desligar (3)Comodo-Entrada 3.");
 
         struct Client *client = head;
         int i = 1;
