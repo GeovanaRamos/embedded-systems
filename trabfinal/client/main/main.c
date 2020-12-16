@@ -3,33 +3,33 @@
 #include "esp_event.h"
 #include "esp_log.h"
 #include "freertos/semphr.h"
+#include "freertos/queue.h"
 #include "gpio.h"
 #include "mqtt.h"
-#include "wifi.h"
 #include "nvs.h"
+#include "wifi.h"
 
 xSemaphoreHandle wifiSemaphore;
 xSemaphoreHandle configSemaphore;
+xQueueHandle interruptQueue;
 
 void watch_button(void* params) {
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    int pin, previous_state = 0;
+
     while (true) {
-        int button_state = get_button_state();
-        int previous = 0;
-
-        if (!button_state) {
-            printf("Button pressed\n");
-            publish_readings("input", 1);
-            vTaskDelay(2000 / portTICK_PERIOD_MS);
-            previous = 1;
+        if (xQueueReceive(interruptQueue, &pin, portMAX_DELAY)) {
+            int state = get_button_state(pin);
+            if (state == 1) {
+                disable_interrupt(pin);
+                while (get_button_state(pin) == state) {
+                    vTaskDelay(50 / portTICK_PERIOD_MS);
+                }
+                previous_state = 1 - previous_state;
+                printf("Button state %d\n", previous_state);
+                publish_readings("input", previous_state);
+                enable_interrupt(pin);
+            }
         }
-
-        if (previous == 1) {
-            publish_readings("input", 0);
-            previous = 0;
-        }
-
-        vTaskDelay(500 / portTICK_PERIOD_MS);
     }
 }
 
@@ -57,6 +57,7 @@ void watch_wifi(void* params) {
 void app_main(void) {
     wifiSemaphore = xSemaphoreCreateBinary();
     configSemaphore = xSemaphoreCreateBinary();
+    interruptQueue = xQueueCreate(10, sizeof(int));
 
     init_nvs();
     init_gpio();
@@ -68,6 +69,7 @@ void app_main(void) {
 
     if (xSemaphoreTake(configSemaphore, portMAX_DELAY)) {
         xTaskCreate(&watch_button, "Monitora Botão", 4096, NULL, 1, NULL);
+        init_interrupt();
         xTaskCreate(&read_dht11, "Ler dht11", 4096, NULL, 1, NULL);
     }
 }
