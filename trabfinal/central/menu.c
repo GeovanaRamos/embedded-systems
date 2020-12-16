@@ -63,7 +63,11 @@ void config_client_menu() {
     wclear(menu);
     char room[50], input_name[50], output_name[50], log[50], *topic, *json;
 
-    mvwprintw(menu, LINE_START + 2, 0, "ADICIONANDO NOVO CLIENTE");
+    if (new_client == NULL){
+        return;
+    }
+
+    mvwprintw(menu, LINE_START + 1, 0, "ADICIONANDO NOVO CLIENTE");
 
     mvwprintw(menu, LINE_START + 2, 0, "Digite o nome do comodo: \n");
     wrefresh(menu);
