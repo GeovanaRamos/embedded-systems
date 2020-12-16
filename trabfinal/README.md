@@ -39,7 +39,7 @@ Depois:
 idf.py build
 idf.py -p {PORTA} flash monitor
 ```
-
+- Caso o menu apresente um novo cliente, digite 100 para configurar.
 - Para ligar/desligar o alarme digite 200
 - Para ligar/desligar um dispositivo de saída, digite o código que aparece na lista Cômodo-Saída.
 - Para sair digite 0.
