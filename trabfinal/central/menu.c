@@ -111,8 +111,6 @@ void parse_menu_option(int option) {
         sprintf(json, "{\"value\":%d}", turn_on);
         sprintf(topic, "fse2020/160122180/dispositivos/%s", client->mac);
         publish(topic, json);
-
-        client->output_value = turn_on; 
     } else {
         config_client_menu();
     }

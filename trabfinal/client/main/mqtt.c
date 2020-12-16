@@ -1,6 +1,4 @@
 #include "mqtt.h"
-#include "gpio.h"
-#include "nvs.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -16,10 +14,12 @@
 #include "freertos/queue.h"
 #include "freertos/semphr.h"
 #include "freertos/task.h"
+#include "gpio.h"
 #include "lwip/dns.h"
 #include "lwip/netdb.h"
 #include "lwip/sockets.h"
 #include "mqtt_client.h"
+#include "nvs.h"
 
 #define TAG "MQTT"
 
@@ -27,7 +27,7 @@ extern xSemaphoreHandle configSemaphore;
 
 esp_mqtt_client_handle_t client;
 int msg_id;
-int is_configured = 0; 
+int is_configured = 0;
 char *room;
 
 void esp_init_config() {
@@ -37,16 +37,16 @@ void esp_init_config() {
     esp_efuse_mac_get_default(mac);
 
     char topic[50];
-    sprintf(topic, "fse2020/160122180/dispositivos/%x%x%x%x%x%x", 
-        mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+    sprintf(topic, "fse2020/160122180/dispositivos/%x%x%x%x%x%x",
+            mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
     char json[50];
-    sprintf(json, "{\"mac\":\"%x%x%x%x%x%x\"}", 
-        mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-    
+    sprintf(json, "{\"mac\":\"%x%x%x%x%x%x\"}",
+            mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+
     msg_id = esp_mqtt_client_subscribe(client, topic, 0);
 
-    if (is_configured){
+    if (is_configured) {
         xSemaphoreGive(configSemaphore);
     } else {
         mqtt_publish(topic, json);
@@ -55,7 +55,7 @@ void esp_init_config() {
 
 void save_room_name(char *json) {
     printf("Save room name\n");
-    
+
     // "{\"room\":\"sala\"}"
     cJSON *root = cJSON_Parse(json);
     char *json_room = cJSON_GetObjectItemCaseSensitive(root, "room")->valuestring;
@@ -68,15 +68,15 @@ void save_room_name(char *json) {
     xSemaphoreGive(configSemaphore);
 }
 
-void parse_led_status(char *json){
+void parse_led_status(char *json) {
     printf("Change led status\n");
-    
+
     // "{\"value\":1}"
     cJSON *root = cJSON_Parse(json);
     int json_status = cJSON_GetObjectItemCaseSensitive(root, "value")->valueint;
     change_led_status(json_status);
     cJSON_Delete(root);
-
+    publish_readings("output", json_status);
 }
 
 static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
@@ -129,8 +129,8 @@ void mqtt_start() {
     is_configured = read_room_from_nvs(&room);
 
     esp_mqtt_client_config_t mqtt_config = {
-       // .uri = "mqtt://192.168.15.9:1883",
-        .uri="mqtt://broker.emqx.io"
+        // .uri = "mqtt://192.168.15.9:1883",
+        .uri = "mqtt://broker.emqx.io"
         //.uri="mqtt://test.mosquitto.org"
         //.uri = "mqtt://mqtt.eclipse.org",
     };
@@ -144,17 +144,22 @@ void mqtt_publish(char *topic, char *message) {
     printf("Menssage sent ID: %d, T: %s, M: %s\n", message_id, topic, message);
 }
 
-void publish_readings(char *mode, int data){
+void publish_readings(char *mode, int data) {
     char topic[50];
     char json[50];
-    
+
     uint8_t mac[6] = {0};
     esp_efuse_mac_get_default(mac);
 
-    sprintf(json, "{\"mac\":\"%x%x%x%x%x%x\", \"value\": %d }", 
-        mac[0], mac[1], mac[2], mac[3], mac[4], mac[5], data);
+    if (strcmp(mode, "input") == 0 || strcmp(mode, "output") == 0) {
+        sprintf(json, "{\"mac\":\"%x%x%x%x%x%x\", \"value\": %d, \"mode\": \"%s\" }",
+                mac[0], mac[1], mac[2], mac[3], mac[4], mac[5], data, mode);
+        sprintf(topic, "fse2020/160122180/%s/%s", room, "estado");
+    } else {
+        sprintf(json, "{\"mac\":\"%x%x%x%x%x%x\", \"value\": %d }",
+                mac[0], mac[1], mac[2], mac[3], mac[4], mac[5], data);
+        sprintf(topic, "fse2020/160122180/%s/%s", room, mode);
+    }
 
-    sprintf(topic, "fse2020/160122180/%s/%s", room, mode);
-    
     mqtt_publish(topic, json);
 }

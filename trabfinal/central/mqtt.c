@@ -25,11 +25,18 @@ void parse_message(char* topic, char* payload) {
             client->temperature = value->valueint;
         else if (strstr(topic, "umidade") != NULL)
             client->humidity = value->valueint;
-        else if (strstr(topic, "estado"))
-            client->input_value = value->valueint;
+        else if (strstr(topic, "estado")) {
+            char *mode = cJSON_GetObjectItemCaseSensitive(root, "mode")->valuestring;
+            if (strcmp(mode, "input") == 0)
+                client->input_value = value->valueint;
+            else if (strcmp(mode, "output") == 0)
+                client->output_value = value->valueint;
+        }
     } else {
         create_client(mac->valuestring);
     }
+
+    cJSON_Delete(root);
 }
 
 int on_message(void* context, char* topic, int topic_len, MQTTClient_message* message) {

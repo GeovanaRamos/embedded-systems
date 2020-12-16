@@ -19,13 +19,13 @@ void watch_button(void* params) {
 
         if (!button_state) {
             printf("Button pressed\n");
-            publish_readings("estado", 1);
+            publish_readings("input", 1);
             vTaskDelay(2000 / portTICK_PERIOD_MS);
             previous = 1;
         }
 
         if (previous == 1) {
-            publish_readings("estado", 0);
+            publish_readings("input", 0);
             previous = 0;
         }
 
