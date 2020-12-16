@@ -17,17 +17,6 @@ menu "Configuração do Wifi e APIs"
         default 5
         help
             Configure o valor máximo de tentativas de conexão.
-    
-    config WEATHER_API_KEY
-        string "Chave do OpenWeather"
-        default "123abc"
-        help
-            Adicione o valor da chave da API do OpenWeather 
-    
-    config IP_API_KEY
-        string "Chave do IPStack"
-        default "123abc"
-        help
-            Adicione o valor da chave da API do IPStack 
+
     
 endmenu
