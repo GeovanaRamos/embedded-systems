@@ -39,4 +39,8 @@ struct Client* get_client(char* mac);
 void release_clients();
 struct Client* get_client_by_index(int index);
 
+void change_alarm_status();
+void play_alarm(int value);
+char* get_alarm_string_status();
+
 #endif  

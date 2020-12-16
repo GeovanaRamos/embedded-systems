@@ -27,9 +27,10 @@ void parse_message(char* topic, char* payload) {
             client->humidity = value->valueint;
         else if (strstr(topic, "estado")) {
             char *mode = cJSON_GetObjectItemCaseSensitive(root, "mode")->valuestring;
-            if (strcmp(mode, "input") == 0)
+            if (strcmp(mode, "input") == 0){
                 client->input_value = value->valueint;
-            else if (strcmp(mode, "output") == 0)
+                play_alarm(value->valueint);
+            } else if (strcmp(mode, "output") == 0)
                 client->output_value = value->valueint;
         }
     } else {
@@ -77,3 +78,4 @@ void publish(char* topic, char* payload) {
     MQTTClient_publishMessage(client, topic, &pubmsg, &token);
     MQTTClient_waitForCompletion(client, token, 1000L);
 }
+

@@ -99,7 +99,9 @@ void parse_menu_option(int option) {
 
     if(option==0)
         return;
-    else if (option!=100){
+    else if (option==200){
+        change_alarm_status();
+    } else if (option!=100){
         int turn_on = option / 10;
         int client_index = option % 10;
         struct Client *client = get_client_by_index(client_index);
@@ -122,9 +124,9 @@ void *read_menu(void *arg) {
         wclear(menu);
         mvwprintw(menu, LINE_START, 0, "-----------------MENU----------------\n");
 
-        mvwprintw(menu, LINE_START + 1, 0, "Para ligar um dispostivo digite 1 + código do dispositivo.\n");
-        mvwprintw(menu, LINE_START + 2, 0, "Para desligar um dispostivo digite 1 + código do dispositivo.\n");
-        mvwprintw(menu, LINE_START + 3, 0, "Para sair digite 0.\n");
+        mvwprintw(menu, LINE_START + 1, 0, "Para LIGAR um dispostivo digite 1 + código do dispositivo.\n");
+        mvwprintw(menu, LINE_START + 2, 0, "Para DESLIGAR um dispostivo digite 1 + código do dispositivo.\n");
+        mvwprintw(menu, LINE_START + 3, 0, "Para SAIR digite 0 e para mudar o ALARME digite 200.\n");
         mvwprintw(menu, LINE_START + 4, 0, "Ex: Para ligar (3)Comodo-Entrada digite 13.");
 
         struct Client *client = head;
@@ -134,8 +136,8 @@ void *read_menu(void *arg) {
             i++;
             client = client->next;
         }
-
-        mvwprintw(menu, LINE_START + 6 + i, 0, "-------------------------------------\n");
+        mvwprintw(menu, LINE_START + 6 + i, 0, "O alarme está %s", get_alarm_string_status());
+        mvwprintw(menu, LINE_START + 7 + i, 0, "-------------------------------------\n");
         mvwprintw(menu, SCAN_LINE, 0, "Digite o código da opção: ");
         wrefresh(menu);
 
