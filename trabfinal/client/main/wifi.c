@@ -88,20 +88,14 @@ void wifi_start() {
     /* xEventGroupWaitBits() returns the bits before the call returned, hence we can test which event actually
      * happened. */
     if (bits & WIFI_CONNECTED_BIT) {
-        ESP_LOGI(TAG, "connected to ap SSID:%s password:%s",
+        printf("connected to ap SSID:%s password:%s\n",
                  WIFI_SSID, WIFI_PASS);
     } else if (bits & WIFI_FAIL_BIT) {
-        ESP_LOGI(TAG, "Failed to connect to SSID:%s, password:%s",
+        printf("Failed to connect to SSID:%s, password:%s\n",
                  WIFI_SSID, WIFI_PASS);
     } else {
         ESP_LOGE(TAG, "UNEXPECTED EVENT");
     }
 
     vEventGroupDelete(s_wifi_event_group);
-}
-
-uint8_t get_mac_address(){
-    uint8_t base_mac_addr[6] = {0};
-
-    return esp_efuse_mac_get_custom(base_mac_addr);
 }

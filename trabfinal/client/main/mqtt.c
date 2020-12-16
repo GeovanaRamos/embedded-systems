@@ -54,7 +54,7 @@ void esp_init_config() {
 }
 
 void save_room_name(char *json) {
-    ESP_LOGI(TAG, "Save room name");
+    printf("Save room name\n");
     
     // "{\"room\":\"sala\"}"
     cJSON *root = cJSON_Parse(json);
@@ -69,7 +69,7 @@ void save_room_name(char *json) {
 }
 
 void parse_led_status(char *json){
-    ESP_LOGI(TAG, "Change led");
+    printf("Change led status\n");
     
     // "{\"value\":1}"
     cJSON *root = cJSON_Parse(json);
@@ -102,8 +102,8 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event) {
             break;
         case MQTT_EVENT_DATA:
             ESP_LOGI(TAG, "MQTT_EVENT_DATA");
-            ESP_LOGI(TAG,"TOPIC=%.*s\r\n", event->topic_len, event->topic);
-            ESP_LOGI(TAG,"DATA=%.*s\r\n", event->data_len, event->data);
+            printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
+            printf("DATA=%.*s\r\n", event->data_len, event->data);
             if (is_configured && strstr(event->data, "value") != NULL)
                 parse_led_status(event->data);
             else if (!is_configured && strstr(event->data, "room") != NULL)
@@ -125,9 +125,8 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 }
 
 void mqtt_start() {
-    ESP_LOGI("MQTT", "Check NVS for room name");
+    printf("Check NVS for room name\n");
     is_configured = read_room_from_nvs(&room);
-    //ESP_LOGI("MQTT", "Room name=%s", room);
 
     esp_mqtt_client_config_t mqtt_config = {
        // .uri = "mqtt://192.168.15.9:1883",
@@ -142,7 +141,7 @@ void mqtt_start() {
 
 void mqtt_publish(char *topic, char *message) {
     int message_id = esp_mqtt_client_publish(client, topic, message, 0, 1, 0);
-    ESP_LOGI(TAG, "Mensagem enviada, ID: %d, T: %s", message_id, topic);
+    printf("Menssage sent ID: %d, T: %s, M: %s\n", message_id, topic, message);
 }
 
 void publish_readings(char *mode, int data){

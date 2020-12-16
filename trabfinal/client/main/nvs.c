@@ -37,12 +37,12 @@ int read_room_from_nvs(char **room) {
 
         switch (res) {
             case ESP_OK:
-                ESP_LOGI("NVS","String found: %s", *room);
+                printf("String found: %s\n", *room);
                 is_configured = 1;
                 break;
             case ESP_ERR_NOT_FOUND:
                 free(*room);
-                ESP_LOGE("NVS", "String not found");
+                printf("String not found\n");
                 break;
             default:
                 ESP_LOGE("NVS", "Error accessing NVS (%s)", esp_err_to_name(res));

@@ -18,7 +18,7 @@ void watch_button(void* params) {
         int previous = 0;
 
         if (!button_state) {
-            ESP_LOGI("GPIO", "Button pressed");
+            printf("Button pressed\n");
             publish_readings("estado", 1);
             vTaskDelay(2000 / portTICK_PERIOD_MS);
             previous = 1;
@@ -46,7 +46,7 @@ void read_dht11(void* params) {
 void watch_wifi(void* params) {
     while (true) {
         if (xSemaphoreTake(wifiSemaphore, portMAX_DELAY)) {
-            ESP_LOGI("MAIN", "WIFI OK, Start mqtt");
+            printf("WIFI OK, Start mqtt\n");
             mqtt_start();
 
             vTaskDelete(NULL);
