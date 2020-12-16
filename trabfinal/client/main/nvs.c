@@ -19,7 +19,6 @@ void init_nvs() {
 }
 
 int read_room_from_nvs(char **room) {
-    ESP_ERROR_CHECK(nvs_flash_init());
 
     nvs_handle partition_handle;
 
@@ -42,12 +41,12 @@ int read_room_from_nvs(char **room) {
                 is_configured = 1;
                 break;
             case ESP_ERR_NOT_FOUND:
-                free(room);
+                free(*room);
                 ESP_LOGE("NVS", "String not found");
                 break;
             default:
                 ESP_LOGE("NVS", "Error accessing NVS (%s)", esp_err_to_name(res));
-                free(room);
+                free(*room);
                 break;
         }
 
